@@ -4,6 +4,15 @@ html, body {
     margin: 0;
 }
 
+img.avatar {
+    position: relative;
+    clip-path: circle(97px at center);
+    width: 200px;
+    height: 200px;
+    display: block;
+    margin: auto;
+}
+
 div.text {
     position: relative;
     margin: 0 auto;
@@ -26,7 +35,7 @@ div.text {
 #map {
     position: relative;
     margin: 0 auto;
-    height: 375px;
+    height: 350px;
     width: 665px;
     border-radius: 10px;
 }
