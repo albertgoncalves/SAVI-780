@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <title>@albertgoncalves/loop-lesson</title>
+    </head>
+    <body>
+        <div class="text">
+            <img src="Tulips.jpg"/>
+            <h1 class="author">a little loop lesson</h1>
+            <span class="author">
+                <a href="https://glitch.com/@albertgoncalves">@albertgoncalves
+                </a>
+            </span>
+        </div>
+        <div class="text">
+            <p>
+                In <a href="https://www.haskell.org/">Haskell</a>,
+                <a href="https://en.wikipedia.org/wiki/Recursion_(computer_science)">
+                recursive</a> operations take the place of
+                <a href="https://en.wikipedia.org/wiki/For_loop">for</a>- and
+                <a href="https://en.wikipedia.org/wiki/While_loop">while</a>
+                -loops;
+                <a href="https://memegenerator.net/img/instances/62282051/fur-sure.jpg">
+                for sure</a>, there are a number of advantages to using
+                recursion in place of the more familiar, loop-based methods.
+            </p>
+            <p>
+                ... And yet, there seems to be situations in which explicitly
+                repeating a given process a specific number of times is not
+                merely a means to an end, but the explicitly required
+                operation.
+            </p>
+            <p>
+                <a>
+                    <span class="wave">
+                        So, how could we write something like a for-loop in
+                        Haskell?
+                    </span>
+                </a>
+            </p>
+        </div>
+        <div class="text">
+            <p>
+                Before we get into Haskell, let's look at an example of a very
+                specific loop in a familiar context.
+            </p>
+            <p class="p-code">
+                $ python
+            </p>
+            <p class="p-code">
+                >>> def my_fun(constant, x):<br>
+                ... &nbsp;&nbsp;&nbsp;&nbsp;return x - (constant * x)
+            </p>
+            <p class="p-code">
+                >>> n = int(10)<br>
+                >>> my_x = int(1)<br>
+                >>> my_constant = int(10)<br>
+            </p>
+            <p class="p-code">
+                >>> for _ in range(n):<br>
+                ... &nbsp;&nbsp;&nbsp;&nbsp;my_x = my_fun(my_constant, my_x)
+            </p>
+            <p class="p-code">
+                >>> my_x<br>
+                3486784401
+            </p>
+            <p>
+                We arrive that this particular value by repeatedly feeding
+                <code class="p-code">x</code> back into
+                <code class="p-code">my_fun()</code> 10 times, starting with
+                <code class="p-code">x = 1</code>. This is a completely
+                arbitrary and contrived example, but this kind of operation
+                can be quickly encountered in a variety of
+                <a href="http://www.wildml.com/2015/09/implementing-a-neural-network-from-scratch/">
+                meaningful contexts</a>.
+            </p>
+        </div>
+        <div class="text">
+            <p>
+                <strong>Two</strong> things will make this a little bit tricky
+                to implement in Haskell.
+                <ul>
+                    <li>
+                        Typically, iterative process either involve some
+                        list-like structure which is iterated
+                        <em>through</em> or a
+                        <a href="https://wiki.haskell.org/The_Fibonacci_sequence">
+                        recursive</a> procedure — as opposed
+                        to something like: "run this function, some specific
+                        number of times."
+                    </li>
+                    <li>
+                        Modifying <code class="p-code">x</code> in a loop such
+                        as this can be described as affecting the
+                        <strong>state</strong> of the programming environment.
+                        <code class="p-code">my_x</code> is repeatedly updated
+                        with the result of a function which takes
+                        <code class="p-code">my_x</code> as one of its inputs.
+                        Such procedures <em>do not exist</em> in Haskell.
+                    </li>
+                </ul>
+                Actually, <strong>three</strong>.
+                <ul>
+                    <li>
+                        It's always nice to avoid
+                        <a id="partial" href="https://wiki.haskell.org/List_of_partial_functions">
+                        partial functions</a>. They are handy... but handiness
+                        comes at a cost.
+                    </li>
+                </ul>
+            </p>
+        </div>
+        <div class="text">
+            <p>
+                That last point may be lacking in some context; let's look at a
+                way we could use partial functions to recreate the above
+                for-loop.
+            </p>
+            <p class="p-code">
+                $ ghci
+            </p>
+            <p class="p-code">
+                Prelude> :{<br>
+                Prelude| partialLoop :: (Int -> Int -> Int) -> Int -> Int ->
+                Int -> Int<br>
+                Prelude| partialLoop fun n x constant =<br>
+                Prelude| &nbsp;&nbsp;&nbsp;&nbsp;if n <= 0 then x<br>
+                Prelude| &nbsp;&nbsp;&nbsp;&nbsp;else if n == 1 then fun
+                constant x<br>
+                Prelude| &nbsp;&nbsp;&nbsp;&nbsp;else last $ take (n + 1) $
+                iterate (fun constant) x<br>
+                Prelude| :}
+            </p>
+            <p class="p-code">
+                Prelude> :{<br>
+                Prelude| fun' :: Int -> Int -> Int<br>
+                Prelude| fun' constant x = x - (constant * x)<br>
+                Prelude| :}
+
+            </p>
+            <p class="p-code">
+                Prelude> n' = 10 :: Int<br>
+                Prelude> x' = 1 :: Int<br>
+                Prelude> constant' = 10 :: Int
+            </p>
+            <p class="p-code">
+                Prelude> partialLoop fun' n' x' constant'<br>
+                3486784401
+            </p>
+            <p>
+                This isn't an ideal solution.
+                <ul>
+                    <li>
+                        The use of <code class="p-code">last</code> brings with
+                        it the disadvantages of
+                        <a href="https://wiki.haskell.org/Partial_functions">
+                        partial application</a>.
+                        In short, it opens up cases in which potential
+                        values input into the function could cause the program
+                        to crash. There are ways we could insulate the function
+                        from this behavior, but the better solution would be to
+                        avoid partial functions altogether.
+                    </li>
+                    <li>
+                        This implementation works by appending each successive
+                        value to a list; our friend
+                        <code class="p-code">last</code> allows us to simply
+                        grab the one value we want: the <em>last</em> value.
+                        The above consideration aside, this is also a poor use
+                        of memory: running this function with a high value for
+                        <code class="p-code">n</code> will end up
+                        creating a very long list in memory, then after it is
+                        created, looking through the list item-by-item all the
+                        way to the end until the last value is found. It would
+                        be nicer to cut out this wasteful mechanism.
+                    </li>
+                </ul>
+            </p>
+        </div>
+        <div class="text">
+            <p>
+                So what might a <strong>safer</strong> approach look like?
+            </p>
+            <p class="p-code">
+                $ ghci
+            </p>
+            <p class="p-code">
+                Prelude> :{<br>
+                Prelude> safeLoop :: (Int -> Int -> Int) -> Int ->
+                Int -> Int -> Int<br>
+                Prelude| safeLoop fun n x constant =<br>
+                Prelude| &nbsp;&nbsp;&nbsp;&nbsp;if n <= 0 then x<br>
+                Prelude| &nbsp;&nbsp;&nbsp;&nbsp;else if n == 1 then fun
+                constant x<br>
+                Prelude| &nbsp;&nbsp;&nbsp;&nbsp;else foldr fun x $ take n $
+                repeat constant<br>
+                Prelude| :}
+            </p>
+            <p>
+                Let's grab the same inputs from above and try out our new
+                function.
+            </p>
+            <p class="p-code">
+                Prelude> safeLoop fun' n' x' constant'<br>
+                3486784401
+            </p>
+            <p>
+                This addresses both of the above points: avoiding the use of
+                any partial functions as well as implementing the desired
+                iterative process without generating a list of excess material
+                along the way.
+            </p>
+        </div>
+    </body>
+</html>

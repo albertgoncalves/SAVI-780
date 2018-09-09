@@ -1,0 +1,32 @@
+html, body {
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 12px;
+    margin: 0;
+}
+
+div.text {
+    position: relative;
+    margin: 0 auto;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: block;
+    width: 625px;
+    padding: 20px;
+    border-style: dashed;
+    border-width: .5px;
+    border-radius: 10px;
+    background-color: white;
+}
+
+.author {
+    display: block;
+    text-align: center;
+}
+
+#map {
+    position: relative;
+    margin: 0 auto;
+    height: 375px;
+    width: 665px;
+    border-radius: 10px;
+}
