@@ -120,7 +120,8 @@ var observations = [
 var coords = randCoords();
 var mapOptions = {
     dragging: false,
-    zoomControl: false
+    zoomControl: false,
+    scrollWheelZoom: false
 };
 var map = L.map('map', mapOptions).setView(coords, randomZoom());
 // var map = L.map('map', mapOptions).setView([40, -74], randomZoom());
