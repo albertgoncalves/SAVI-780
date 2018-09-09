@@ -119,9 +119,13 @@ var observations = [
 
 var coords = randCoords();
 var mapOptions = {
+    doubleClickZoom: false,
     dragging: false,
-    zoomControl: false,
-    scrollWheelZoom: false
+    keyboard: false,
+    touchZoom: false,
+    scrollWheelZoom: false,
+    tap: false,
+    zoomControl: false
 };
 var map = L.map('map', mapOptions).setView(coords, randomZoom());
 // var map = L.map('map', mapOptions).setView([40, -74], randomZoom());
