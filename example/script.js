@@ -9,54 +9,50 @@ var tileOpt = {
 var dataUrl = (
     'https://cdn.glitch.com/baade5a3-f979-48f2-9a28-14daee16fab0%2Fmap' +
     '.geojson?1535912286843'
-    );
+);
 
 L.tileLayer(tileUrl, tileOpt).addTo(map);
 
 fetch(dataUrl)
     .then(
-        function (response) {
+        function(response) {
             return response.json();
         }
     )
     .then(
-        function (data) {
+        function(data) {
             L.geoJson(data).addTo(map);
         }
     );
 
+/*
+function getResp(response) {
+    return response.json();
+}
 
-// function getResp (response) {
-//     return response.json();
-// }
+function getData(data) {
+    L.geoJson(data).addTo(map);
+}
+*/
 
-// function getData (data) {
-//     L.geoJson(data).addTo(map);
-// }
+/*
+// This doesn't work.
+fetch(dataUrl)
+    .then(getResp(response))
+    .then(getData(data));
+*/
 
-// // Fetch data from our Glitch project
-// fetch(dataUrl)
-//     .then(getResp(response))
-//     .then(getData(data));
-
-
-// function getResp (response) {
-//     return response.json();
-// }
-
-// function getData (data) {
-//     L.geoJson(data).addTo(map);
-// }
-
-// // Fetch data from our Glitch project
-// fetch(dataUrl)
-//     .then(
-//         function (response) {
-//             return getResp(response);
-//         }
-//     )
-//     .then(
-//         function (data) {
-//             getData(data);
-//         }
-//     );
+/*
+// This does.
+fetch(dataUrl)
+    .then(
+        function(response) {
+            return getResp(response);
+        }
+    )
+    .then(
+        function(data) {
+            getData(data);
+        }
+    );
+*/
