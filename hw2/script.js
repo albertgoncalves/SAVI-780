@@ -74,47 +74,47 @@ function randomObservation(observations) {
 // ...more or less
 
 var observations = [
-    'This is... <em>somewhere</em>.',
+    "This is... <em>somewhere</em>.",
 
-    'I think I was here once.',
+    "I think I was here once.",
 
-    'This area is often referred to as...<br>' +
-    'what was it again?',
+    "This area is often referred to as...<br>" +
+    "what was it again?",
 
-    '<strong>Very</strong> important things<br>' +
-    'happening here!',
+    "<strong>Very</strong> important things<br>" +
+    "happening here!",
 
-    'I think this is<br>' +
-    '<strong>New York City</strong>?',
+    "I think this is<br>" +
+    "<strong>New York City</strong>?",
 
-    '<strong>Russia</strong>, for sure.',
+    "<strong>Russia</strong>, for sure.",
 
-    'Without a doubt, this is<br>' +
-    '<strong>Alaska</strong>.',
+    "Without a doubt, this is<br>" +
+    "<strong>Alaska</strong>.",
 
-    'Lorem ipsum, <br>' +
-    'cantabile, <br>' +
-    '... mirabile.',
+    "Lorem ipsum, <br>" +
+    "cantabile, <br>" +
+    "... mirabile.",
 
-    'High quality map-making!',
+    "High quality map-making!",
 
-    'Look, <em>most</em> of the information<br>' +
-    'is accurate.',
+    "Look, <em>most</em> of the information<br>" +
+    "is accurate.",
 
-    'Is this marker even<br>' +
-    'pointing to land?',
+    "Is this marker even<br>" +
+    "pointing to land?",
 
-    'This is probably...<br>' +
-    '<strong>Finlandia</strong>?',
+    "This is probably...<br>" +
+    "<strong>Finlandia</strong>?",
 
-    'These are pretty tiles.',
+    "These are pretty tiles.",
 
     "Isn't there an important bridge<br>somewhere around here?",
 
-    'Hello! Bom dia! Willkommen!',
+    "Hello! Bom dia! Willkommen!",
 
-    'Some of these are just filler.<br>' +
-    'You know how it goes.'
+    "Some of these are just filler.<br>" +
+    "You know how it goes."
     ];
 
 var coords = randCoords();
@@ -130,7 +130,9 @@ var mapOptions = {
 var map = L.map('map', mapOptions).setView(coords, randomZoom());
 // var map = L.map('map', mapOptions).setView([40, -74], randomZoom());
 var tileOptions = {maxZoom: 18};
-var tileUrl = 'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg';
+// var tileUrl = 'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg';
+var tileUrl =
+    'https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg';
 
 L.tileLayer(tileUrl, tileOptions).addTo(map);
 
@@ -144,9 +146,9 @@ var marker5 =
     addPointToMap(randPointInView(currentBounds), observations).openPopup();
 
 // var fetchUrlPoints =
-//     'https://data.cityofnewyork.us/resource/x9rb-8qrt.geojson';
+//     'https://data.cityofnewyork.us/resource/x9rb-8qrt.geojson?$limit=10$offset=0';
 // var fetchUrlPolygons =
-//     'https://data.cityofnewyork.us/resource/cuae-wd7h.geojson';
+//     'https://data.cityofnewyork.us/resource/cuae-wd7h.geojson?$limit=10$offset=0';
 
 // loadData(map, fetchUrlPoints);
 // loadData(map, fetchUrlPolygons);
