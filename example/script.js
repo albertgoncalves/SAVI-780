@@ -56,3 +56,49 @@ fetch(dataUrl)
         }
     );
 */
+
+// click button mouse down
+map.on(
+    'mousedown', function () {
+        console.log('mousedown');
+    }
+);
+
+// release mouse button
+map.on(
+    'mouseup', function () {
+        console.log('mouseup');
+    }
+);
+
+// click button mouse down
+map.on(
+    'preclick', function () {
+        console.log('preclick');
+    }
+);
+
+map.on(
+    'click', function () {
+        console.log('click');
+    }
+);
+
+map.on(
+    'dblclick', function () {
+        console.log('dblclick');
+    }
+);
+
+map.on(
+    'moveend', function () {
+        console.log('moveend');
+    }
+);
+
+// key press listener while also clicking on the map
+map.on(
+    'keypress', function (event) {
+        console.log(event);
+    }
+);
