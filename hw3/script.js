@@ -8,7 +8,7 @@ const randPoint = (bound) => bound - Math.random() * (bound * 2);
 
 const randCoords = () => [randPoint(75), randPoint(180)];
 
-const randomZoom = () => Math.round(Math.random() * 3) + 5;
+const randomZoom = () => Math.round(Math.random() * 4) + 4;
 
 // note: arrow notation will define this function as if we were returning the
 // value 'map.setView(coords, zoom)' -- won't cause any problems here, but keep
@@ -100,8 +100,8 @@ function runAway(markerFrom, markerTo) {
     let xPath = xTo - xFrom;
     let yPath = yTo - yFrom;
 
-    let xNew = xFrom + (xPath * Math.random() * 0.001) + 0.0025;
-    let yNew = yFrom + (yPath * Math.random() * 0.001) + 0.0025;
+    let xNew = xFrom + (xPath * Math.random() * 0.0005) + 0.0025;
+    let yNew = yFrom + (yPath * Math.random() * 0.0005) + 0.0025;
 
     return [xNew, yNew];
 }
@@ -121,8 +121,8 @@ const circleOpts  = {color:      '#f03',
                     fillColor:  '#f03',
                     radius:      50000};
 
-const speed       = 10000; // debug mode!
-// const speed       = 50;
+// const speed       = 10000; // debug mode!
+const speed       = 50;
 var crntWrd       = empty;
 var coords        = randCoords();
 var zoom          = randomZoom();
@@ -204,12 +204,15 @@ window.onkeydown = function(e) {
 
         } else if (crntWrd == 'out') {
             let newZoom = zoom - 1;
-            zoom = newZoom < 0 ? 0
+            zoom = newZoom < 4 ? 4
                                : newZoom;
             if (firstOut) {
                 strikeThru('out');
                 firstOut = false;
             }
+
+        } else if (crntWrd == 'reset') {
+            location.reload();
         }
 
         // console.log(coords, zoom);
