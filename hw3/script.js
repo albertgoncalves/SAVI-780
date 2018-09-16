@@ -2,8 +2,7 @@
 /* global keysFlip */
 /* global L        */
 
-/* jshint -W104 */
-/* jshint -W119 */
+/*jshint esversion: 6 */
 
 function randPoint(bound) {
     return bound - Math.random() * (bound * 2);
@@ -169,8 +168,8 @@ function runAway(markerFrom, markerTo) {
     return [xNew, yNew];
 }
 
-const speed = 10000;
-// const speed = 50;
+// const speed = 10000;
+const speed = 50;
 // const speed = 10;
 
 setInterval(

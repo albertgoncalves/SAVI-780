@@ -1,5 +1,7 @@
 /* global L */
 
+/*jshint esversion: 6 */
+
 var map = L.map('map').setView([34.03, -82.20], 5);
 
 var tileUrl = 'https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png';
@@ -13,50 +15,44 @@ var dataUrl = (
 
 L.tileLayer(tileUrl, tileOpt).addTo(map);
 
+// fetch(dataUrl)
+//     .then(
+//         function(response) {
+//             return response.json();
+//         }
+//     )
+//     .then(
+//         function(data) {
+//             L.geoJson(data).addTo(map);
+//         }
+//     );
+
+
+// const getResponse = (response) => response.json
+// const getData = (data) => {
+// L.geoJson(data).addTo(map)
+// }
+
+
+const getResp = response => response.json();            // this implies the
+const getData = data     => L.geoJson(data).addTo(map); // values will be
+                                                        // returned
+
+// fetch(dataUrl)
+//     .then(getResp)
+//     .then(getData);
+
 fetch(dataUrl)
-    .then(
-        function(response) {
-            return response.json();
-        }
-    )
-    .then(
-        function(data) {
-            L.geoJson(data).addTo(map);
+    .then(getResp)
+    .then(getData)
+    .catch(
+        (e) => {
+            // arbitraryCatchErrorMethod(e)
+            console.log(e);
         }
     );
 
 /*
-function getResp(response) {
-    return response.json();
-}
-
-function getData(data) {
-    L.geoJson(data).addTo(map);
-}
-*/
-
-/*
-// This doesn't work.
-fetch(dataUrl)
-    .then(getResp(response))
-    .then(getData(data));
-*/
-
-/*
-// This does.
-fetch(dataUrl)
-    .then(
-        function(response) {
-            return getResp(response);
-        }
-    )
-    .then(
-        function(data) {
-            getData(data);
-        }
-    );
-*/
-
 // click button mouse down
 map.on(
     'mousedown', function () {
@@ -102,3 +98,4 @@ map.on(
         console.log(event);
     }
 );
+*/
