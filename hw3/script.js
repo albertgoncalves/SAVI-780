@@ -29,10 +29,13 @@ const adjustAx = (map, ax, val) => boundsDiff(map, ax) * val;
 const randPointInView = (currentBounds) => [randPlacement(map, 'lat'),
                                             randPlacement(map, 'lng')];
 
-const addPointToMap = (newPoint, circleOptions, text) =>
-    L.circle(newPoint, circleOptions).addTo(map).bindPopup(text);
-
 // https://www.wrld3d.com/wrld.js/latest/docs/leaflet/L.Circle/
+const addPointToMap = (newPoint, circleOpts, newOpacity, text) =>
+    L.circle(newPoint, circleOpts)
+      .addTo(map)
+      .setStyle({fillOpacity: newOpacity, opacity: newOpacity})
+      .bindPopup(text);
+
 const moveMarker = (marker, newPoint, newOpacity) =>
     marker.setLatLng(newPoint)
           .setStyle({fillOpacity: newOpacity, opacity: newOpacity});
@@ -68,22 +71,73 @@ function pointOffscreen(map) {
     return [xNew, yNew];
 }
 
-const empty        = '';
-const tileUrl      = 'https://stamen-tiles.a.ssl.fastly.net/watercolor' +
-                     '/{z}/{x}/{y}.jpg';
-const tileOptions  = {maxZoom:         18};
-const mapOptions   = {doubleClickZoom: false,
-                      dragging:        false,
-                      keyboard:        false,
-                      touchZoom:       false,
-                      scrollWheelZoom: false,
-                      tap:             false,
-                      zoomControl:     false};
+function measureGap(map, markerPos) {
+    let {0: latPos, 1: lngPos} = markerPos;
 
-var crntWrd = empty;
-var coords  = randCoords();
-var zoom    = randomZoom();
-var map     = L.map('map', mapOptions).setView(coords, zoom);
+    latBounds = boundsDiff(map, 'lat');
+    lngBounds = boundsDiff(map, 'lng');
+    latCntr   = boundsCntr(map, 'lat');
+    lngCntr   = boundsCntr(map, 'lng');
+
+    latRatio = Math.abs(latPos - latCntr) / (latBounds);
+    lngRatio = Math.abs(lngPos - lngCntr) / (lngBounds);
+
+    let gapRatio = ((latRatio + lngRatio) / 2 + 0.3) * 0.85;
+
+    gapRatio = gapRatio < 0.02 ? 0.02
+                               : gapRatio;
+
+    gapRatio = gapRatio > 1    ? 1
+                               : gapRatio;
+
+    return gapRatio;
+}
+
+function runAway(markerFrom, markerTo) {
+    let {0: xFrom, 1: yFrom} = markerFrom;
+    let {0: xTo,   1: yTo  } = markerTo;
+
+    let xPath = xTo - xFrom;
+    let yPath = yTo - yFrom;
+
+    let xNew = xFrom + (xPath * Math.random() * 0.001) + 0.0025;
+    let yNew = yFrom + (yPath * Math.random() * 0.001) + 0.0025;
+
+    return [xNew, yNew];
+}
+
+const empty       = '';
+const tileUrl     = 'https://stamen-tiles.a.ssl.fastly.net/watercolor' +
+                    '/{z}/{x}/{y}.jpg';
+const tileOptions = {maxZoom:         18};
+const mapOptions  = {doubleClickZoom: false,
+                     dragging:        false,
+                     keyboard:        false,
+                     touchZoom:       false,
+                     scrollWheelZoom: false,
+                     tap:             false,
+                     zoomControl:     false};
+const circleOpts  = {color:      '#f03',
+                    fillColor:  '#f03',
+                    radius:      50000};
+
+const speed       = 10000; // debug mode!
+// const speed       = 50;
+var crntWrd       = empty;
+var coords        = randCoords();
+var zoom          = randomZoom();
+var map           = L.map('map', mapOptions).setView(coords, zoom);
+
+var firstUp = true;
+var firstDown = true;
+var firstLeft = true;
+var firstRight = true;
+var firstIn = true;
+var firstOut = true;
+var firstRandom = true;
+
+const strikeThru = (dirId) =>
+    document.getElementById(dirId).style['text-decoration'] = 'line-through';
 
 window.onkeydown = function(e) {
     let keyCode = e.keyCode ? e.keyCode : e.which;
@@ -94,34 +148,68 @@ window.onkeydown = function(e) {
             coords = randCoords();
             zoom   = randomZoom();
 
+            if (firstRandom) {
+                strikeThru('random');
+                firstRandom = false;
+            }
+
         } else if (crntWrd == 'up') {
             let {0: x, 1: y} = coords;
             let newX = x + adjustAx(map, 'lat', 0.25);
             coords = [newX > 90 ? 90 : newX, y];
+
+            if (firstUp) {
+                strikeThru('up');
+                firstUp = false;
+            }
 
         } else if (crntWrd == 'down') {
             let {0: x, 1: y} = coords;
             let newX = x - adjustAx(map, 'lat', 0.25);
             coords = [newX < -90 ? -90 : newX, y];
 
+            if (firstDown) {
+                strikeThru('down');
+                firstDown = false;
+            }
+
         } else if (crntWrd == 'left') {
             let {0: x, 1: y} = coords;
             let newY = y - adjustAx(map, 'lng', 0.20);
             coords = [x, newY];
+
+            if (firstLeft) {
+                strikeThru('left');
+                firstLeft = false;
+            }
 
         } else if (crntWrd == 'right') {
             let {0: x, 1: y} = coords;
             let newY = y + adjustAx(map, 'lng', 0.20);
             coords = [x, newY];
 
+            if (firstRight) {
+                strikeThru('right');
+                firstRight = false;
+            }
+
         } else if (crntWrd == 'in') {
             let newZoom = zoom + 1;
             zoom = newZoom > tileOptions.maxZoom ? tileOptions.maxZoom
                                                  : newZoom;
+            if (firstIn) {
+                strikeThru('in');
+                firstIn = false;
+            }
+
         } else if (crntWrd == 'out') {
             let newZoom = zoom - 1;
             zoom = newZoom < 0 ? 0
                                : newZoom;
+            if (firstOut) {
+                strikeThru('out');
+                firstOut = false;
+            }
         }
 
         // console.log(coords, zoom);
@@ -146,43 +234,22 @@ window.onkeydown = function(e) {
     assignInput(crntWrd);
 };
 
-var circleOptions = {color:      '#f03',
-                     fillColor:  '#f03',
-                     fillOpacity: 0.1,
-                     radius:      50000};
-
-assignInput(empty);
+assignInput('try typing some words!');
 
 L.tileLayer(tileUrl, tileOptions).addTo(map);
 
 var markerPos = randPointInView(map.getBounds());
-var markerEnd = [80, 1000];
+var markerEnd = pointOffscreen(map);
 var marker    = addPointToMap(markerPos,
-                              circleOptions,
+                              circleOpts,
+                              measureGap(map, markerPos),
                               "You'll never catch me!");
-
-function runAway(markerFrom, markerTo) {
-    let {0: xFrom, 1: yFrom} = markerFrom;
-    let {0: xTo,   1: yTo  } = markerTo;
-
-    let xPath = xTo - xFrom;
-    let yPath = yTo - yFrom;
-
-    let xNew = xFrom + (xPath * Math.random() * 0.001) + 0.0025;
-    let yNew = yFrom + (yPath * Math.random() * 0.001) + 0.0025;
-
-    return [xNew, yNew];
-}
-
-// const speed = 10000;
-const speed = 50;
-// const speed = 10;
 
 setInterval(
     function() {
         let currentBounds = map.getBounds();
         let newOpacity = 0.1;
-        // markerPos = runAway(markerPos, markerEnd);
+        markerPos = runAway(markerPos, markerEnd);
         marker    = moveMarker(marker, markerPos, measureGap(map, markerPos));
     }, speed
 );
@@ -192,31 +259,5 @@ setInterval(
         markerEnd = pointOffscreen(map);
         // console.log([boundsCntr(map, 'lat'), boundsCntr(map, 'lng')]);
         // console.log(markerEnd);
-    }, 1000
+    }, 3000
 );
-
-function measureGap(map, markerPos) {
-    let {0: latPos, 1: lngPos} = markerPos;
-
-    latBounds = boundsDiff(map, 'lat');
-    lngBounds = boundsDiff(map, 'lng');
-    latCntr = boundsCntr(map, 'lat');
-    lngCntr = boundsCntr(map, 'lng');
-
-    latRatio = Math.abs(latPos - latCntr) / (latBounds);
-    lngRatio = Math.abs(lngPos - lngCntr) / (lngBounds);
-
-    let gapRatio = 0.1;
-
-    if (latRatio + lngRatio < 2) {
-        gapRatio = (latRatio + lngRatio) / 2 + 0.325;
-    }
-
-    if (gapRatio < 0.05) {
-        gapRatio = 0.05;
-    } else if (gapRatio > 1) {
-        gapRatio = 1;
-    }
-
-    return gapRatio;
-}

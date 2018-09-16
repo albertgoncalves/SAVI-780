@@ -47,3 +47,19 @@ div.search {
     width: 665px;
     border-radius: 10px;
 }
+
+#controls {
+    position: absolute;
+    top: 320px;
+    left: 1010px;
+    width: 100px;
+    /*background-color: rgba(210, 210, 210, 1);*/
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+#controls ul {
+    list-style-type: none;
+    padding: 0px;
+    /*text-decoration: line-through;*/
+}
