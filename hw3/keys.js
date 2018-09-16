@@ -1,4 +1,6 @@
-var keys = {
+/*jshint esversion: 6 */
+
+const keys = {
     backspace: 8,
     tab: 9,
     enter: 13,
@@ -100,7 +102,7 @@ var keys = {
     singlequote: 222
 };
 
-var keysFlip = {
+const keysFlip = {
     8: 'backspace',
     9: 'tab',
     13: 'enter',
