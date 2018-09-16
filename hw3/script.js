@@ -25,27 +25,19 @@ function assignInput(input) {
     document.getElementById('keys').innerHTML = input;
 }
 
-// function assignKeywd(keyword) {
-//     document.getElementById('keyword').innerHTML = keyword;
-// }
-
-function latDiff(map) {
-    return map.getBounds()._northEast.lat - map.getBounds()._southWest.lat;
+function boundsDiff(map, ax) {
+    return map.getBounds()._northEast[ax] - map.getBounds()._southWest[ax];
 }
 
-function lngDiff(map) {
-    return map.getBounds()._northEast.lng - map.getBounds()._southWest.lng;
-}
-
-// const keywords  = ['Yes', 'No'];
-// const kwdLower  = keywords.map((kw) => (kw.toLowerCase()));
 const empty     = '';
-var currentWord = empty;
+const tileUrl   = 'https://stamen-tiles.a.ssl.fastly.net/watercolor' +
+                  '/{z}/{x}/{y}.jpg';
 
-var coords = randCoords();
-// var zoom   = randomZoom();
-var zoom = 3;
-var mapOptions = {
+var currentWord = empty;
+var coords      = randCoords();
+var zoom        = randomZoom();
+var tileOptions = {maxZoom: 18};
+var mapOptions  = {
     doubleClickZoom: false,
     dragging: false,
     keyboard: false,
@@ -54,89 +46,77 @@ var mapOptions = {
     tap: false,
     zoomControl: false
 };
+
+function adjustLat(map) {
+    return boundsDiff(map, 'lat') * 0.25;
+}
+
+function adjustLng(map) {
+    return boundsDiff(map, 'lng') * 0.20;
+}
+
 var map = L.map('map', mapOptions).setView(coords, zoom);
-var tileOptions = {maxZoom: 18};
-var tileUrl =
-    'https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg';
 
 window.onkeydown = function(e) {
     let keyCode = e.keyCode ? e.keyCode : e.which;
-    let key = keysFlip[keyCode];
+    let key     = keysFlip[keyCode];
 
     if (key === 'enter') {
-        // if (kwdLower.indexOf(currentWord) >= 0) {
-        // //     assignKeywd('match found!');
-        // //     currentWord = empty;
-        // } else if (currentWord == 'random') {
-        if (currentWord == 'random') {
+        if (currentWord == 'jump') {
             coords = randCoords();
-            zoomToCoords(map, coords, zoom);
+            zoom   = randomZoom();
 
         } else if (currentWord == 'up') {
             let {0: x, 1: y} = coords;
-            let new_x = x + latDiff(map) * 0.25;
-            coords = [new_x > 90 ? 90 : new_x, y];
-            map.setView(coords, zoom);
+            let newX = x + adjustLat(map);
+            coords = [newX > 90 ? 90 : newX, y];
 
         } else if (currentWord == 'down') {
             let {0: x, 1: y} = coords;
-            let new_x = x - latDiff(map) * 0.25;
-            coords = [new_x < -90 ? -90 : new_x, y];
-            map.setView(coords, zoom);
+            let newX = x - adjustLat(map);
+            coords = [newX < -90 ? -90 : newX, y];
 
         } else if (currentWord == 'left') {
             let {0: x, 1: y} = coords;
-            let new_y = y - lngDiff(map) * 0.20;
-            coords = [x, new_y];
-            map.setView(coords, zoom);
+            let newY = y - adjustLng(map);
+            coords = [x, newY];
 
         } else if (currentWord == 'right') {
             let {0: x, 1: y} = coords;
-            let new_y = y + lngDiff(map) * 0.20;
-            coords = [x, new_y];
-            map.setView(coords, zoom);
+            let newY = y + adjustLng(map);
+            coords = [x, newY];
 
         } else if (currentWord == 'in') {
             let newZoom = zoom + 1;
             zoom = newZoom > tileOptions.maxZoom ? tileOptions.maxZoom
                                                  : newZoom;
-            map.setView(coords, zoom);
-            // console.log(zoom);
-
         } else if (currentWord == 'out') {
             let newZoom = zoom - 1;
             zoom = newZoom < 0 ? 0
                                : newZoom;
-            map.setView(coords, zoom);
-            // console.log(zoom);
         }
 
-    } else if (key === 'space') {
-        // assignKeywd(empty);
-        currentWord += ' ';
-        assignInput(currentWord);
+        map.setView(coords, zoom);
 
-    } else if ((key === 'backspace') ||
-               (key === 'delete')    ||
+    } else if (key === 'space') {
+        currentWord += ' ';
+
+    } else if ((currentWord.length > 20) ||
+               (key === 'backspace')     ||
+               (key === 'delete')        ||
                (key === 'esc')) {
-        // assignKeywd(empty);
         currentWord = empty;
-        assignInput(currentWord);
 
     } else if (key.length > 1) {
         // pass
 
-    } else if (currentWord.length > 20) {
-        currentWord = empty;
-
     } else {
-        // assignKeywd(empty);
         currentWord += key;
-        assignInput(currentWord);
     }
+
+    assignInput(currentWord);
 };
 
 assignInput(empty);
-// assignKeywd(empty);
 
 L.tileLayer(tileUrl, tileOptions).addTo(map);
