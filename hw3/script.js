@@ -6,7 +6,7 @@
 /* jshint -W119 */
 
 function randPoint(bound) {
-    return Math.round(bound - (Math.random() * (bound * 2)), 6);
+    return bound - Math.random() * (bound * 2);
 }
 
 function randCoords() {
@@ -14,7 +14,7 @@ function randCoords() {
 }
 
 function randomZoom() {
-    return Math.floor(Math.random() * 3) + 5;
+    return Math.round(Math.random() * 3) + 5;
 }
 
 function zoomToCoords(map, coordsArray, zoom) {
@@ -34,11 +34,11 @@ function boundsCntr(map, ax) {
 }
 
 function adjustLat(map) {
-    return boundsDiff(map, 'lat') * 0.25;
+    return boundsDiff(map, 'lat') * 0.15;
 }
 
 function adjustLng(map) {
-    return boundsDiff(map, 'lng') * 0.50;
+    return boundsDiff(map, 'lng') * 0.20;
 }
 
 function randPlacement(map, ax) {
@@ -53,8 +53,8 @@ function randPointInView(currentBounds) {
             randPlacement(map, 'lng')];
 }
 
-function addPointToMap(newPoint, text) {
-    return L.marker(newPoint).addTo(map).bindPopup(text);
+function addPointToMap(newPoint, cirleOptions, text) {
+    return L.circle(newPoint, circleOptions).addTo(map).bindPopup(text);
 }
 
 function moveMarker(marker, newPoint) {
@@ -141,6 +141,13 @@ window.onkeydown = function(e) {
     assignInput(crntWrd);
 };
 
+var circleOptions = {
+    color: 'red',
+    fillColor: '#f03',
+    fillOpacity: 0.75,
+    radius: 50000
+};
+
 assignInput(empty);
 
 L.tileLayer(tileUrl, tileOptions).addTo(map);
@@ -156,13 +163,14 @@ function runAway(markerFrom, markerTo) {
     let xPath = xTo - xFrom;
     let yPath = yTo - yFrom;
 
-    let xNew = xFrom + (xPath * Math.random() * 0.00075);
-    let yNew = yFrom + (yPath * Math.random() * 0.00075);
+    let xNew = xFrom + (xPath * Math.random() * 0.0001);
+    let yNew = yFrom + (yPath * Math.random() * 0.0001);
 
     return [xNew, yNew];
 }
 
 const speed = 10000;
+// const speed = 50;
 // const speed = 10;
 
 setInterval(
@@ -189,6 +197,7 @@ function pointOffscreen(map) {
 setInterval(
     function() {
         markerEnd = pointOffscreen(map);
-        console.log(markerEnd);
+        // console.log([boundsCntr(map, 'lat'), boundsCntr(map, 'lng')]);
+        // console.log(markerEnd);
     }, 10000
 );
