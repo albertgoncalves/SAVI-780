@@ -162,14 +162,14 @@ function runAway(markerFrom, markerTo) {
     let xPath = xTo - xFrom;
     let yPath = yTo - yFrom;
 
-    let xNew = xFrom + (xPath * Math.random() * 0.0001);
-    let yNew = yFrom + (yPath * Math.random() * 0.0001);
+    let xNew = xFrom + (xPath * Math.random() * 0.001) + 0.005;
+    let yNew = yFrom + (yPath * Math.random() * 0.001) + 0.005;
 
     return [xNew, yNew];
 }
 
-// const speed = 10000;
-const speed = 50;
+const speed = 10000;
+// const speed = 50;
 // const speed = 10;
 
 setInterval(
@@ -184,12 +184,27 @@ function pointOffscreen(map) {
     let centerLat = boundsCntr(map, 'lat');
     let centerLng = boundsCntr(map, 'lng');
 
-    let xFlip = centerLat >= 0 ? -1 : 1;
-    let xNew = randPoint(90) * xFlip;
+    // let xFlip = centerLat >= 0 ? -1 : 1;
+    // let xNew = Math.abs(randPoint(90)) * xFlip;
 
-    let yFlip = centerLat >= 0 ? -1 : 1;
-    let yNew = randPoint(180) * yFlip;
+    // let yFlip = centerLat >= 0 ? -1 : 1;
+    // let yNew = Math.abs(randPoint(180)) * yFlip;
 
+    let xNew = randPoint(90);
+    let yNew = randPoint(180);
+
+    northEdge = map.getBounds()._northEast.lat;
+    southEdge = map.getBounds()._southWest.lat;
+    eastEdge = map.getBounds()._northEast.lng;
+    westEdge = map.getBounds()._southWest.lng;
+
+    while ((xNew >= westEdge) & (xNew <= eastEdge)) {
+        xNew = randPoint(90);
+    }
+
+    while ((yNew >= southEdge) & (yNew <= northEdge)) {
+        yNew = randPoint(180);
+    }
     return [xNew, yNew];
 }
 
@@ -198,5 +213,5 @@ setInterval(
         markerEnd = pointOffscreen(map);
         // console.log([boundsCntr(map, 'lat'), boundsCntr(map, 'lng')]);
         // console.log(markerEnd);
-    }, 10000
+    }, 1000
 );
