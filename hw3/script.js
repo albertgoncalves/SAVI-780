@@ -130,14 +130,13 @@ var crntWrd       = empty;
 var coords        = randCoords();
 var zoom          = randomZoom();
 var map           = L.map('map', mapOptions).setView(coords, zoom);
-
-var firstUp     = true;
-var firstDown   = true;
-var firstLeft   = true;
-var firstRight  = true;
-var firstIn     = true;
-var firstOut    = true;
-var firstRandom = true;
+var firstUp       = true;
+var firstDown     = true;
+var firstLeft     = true;
+var firstRight    = true;
+var firstIn       = true;
+var firstOut      = true;
+var firstRandom   = true;
 
 window.onkeydown = function(e) {
     let keyCode = e.keyCode ? e.keyCode : e.which;
