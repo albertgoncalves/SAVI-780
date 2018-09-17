@@ -131,12 +131,12 @@ var coords        = randCoords();
 var zoom          = randomZoom();
 var map           = L.map('map', mapOptions).setView(coords, zoom);
 
-var firstUp = true;
-var firstDown = true;
-var firstLeft = true;
-var firstRight = true;
-var firstIn = true;
-var firstOut = true;
+var firstUp     = true;
+var firstDown   = true;
+var firstLeft   = true;
+var firstRight  = true;
+var firstIn     = true;
+var firstOut    = true;
 var firstRandom = true;
 
 window.onkeydown = function(e) {
@@ -248,19 +248,19 @@ var marker    = addPointToMap(markerPos,
                               measureGap(map, markerPos),
                               "You'll never catch me!");
 
-// setInterval(
-//     function() {
-//         let currentBounds = map.getBounds();
-//         let newOpacity = 0.1;
-//         markerPos = runAway(markerPos, markerEnd);
-//         marker    = moveMarker(marker, markerPos, measureGap(map, markerPos));
-//     }, speed
-// );
+setInterval(
+    function() {
+        let currentBounds = map.getBounds();
+        let newOpacity = 0.1;
+        markerPos = runAway(markerPos, markerEnd);
+        marker    = moveMarker(marker, markerPos, measureGap(map, markerPos));
+    }, speed
+);
 
-// setInterval(
-//     function() {
-//         markerEnd = pointOffscreen(map);
-//         // console.log([boundsCntr(map, 'lat'), boundsCntr(map, 'lng')]);
-//         // console.log(markerEnd);
-//     }, 3000
-// );
+setInterval(
+    function() {
+        markerEnd = pointOffscreen(map);
+        // console.log([boundsCntr(map, 'lat'), boundsCntr(map, 'lng')]);
+        // console.log(markerEnd);
+    }, 3000
+);
