@@ -4,7 +4,7 @@ html, body {
     margin: 0;
 }
 
-img.avatar {
+img#avatar {
     position: relative;
     clip-path: circle(97px at center);
     width: 200px;
@@ -27,14 +27,16 @@ div.text {
     background-color: white;
 }
 
-div.search {
+div#input {
     height: 45px;
     text-align: center;
-    font-size: 14px;
-    /*border-width: 0px;*/
+    font-size: 16px;
+    padding: 0px;
+    padding-bottom: 10px;
+    width: 665px;
 }
 
-.author {
+#author {
     display: block;
     text-align: center;
 }
@@ -42,27 +44,23 @@ div.search {
 #map {
     position: relative;
     margin: 0 auto;
-    /*height: 350px;*/
-    height: 600px;
+    height: 525px;
     width: 665px;
     border-radius: 10px;
 }
 
 #controls {
-    position: absolute;
-    top: 320px;
-    left: 1010px;
-    width: 100px;
-    /*background-color: rgba(210, 210, 210, 1);*/
-    margin-top: 15px;
-    margin-bottom: 15px;
+    position: relative;
+    height: 0px;
+    width: 0px;
+    left: calc(50% + 340px);
+    top: 5px;
 }
 
 #controls ul {
     list-style-type: none;
     padding-left: 5px;
     font-size: 15px;
-    /*text-decoration: line-through;*/
 }
 
 #reset {

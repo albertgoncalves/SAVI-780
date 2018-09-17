@@ -45,6 +45,9 @@ const getEdges = (map) => ({northEdge: map.getBounds()._northEast.lat,
                             eastEdge:  map.getBounds()._northEast.lng,
                             westEdge:  map.getBounds()._southWest.lng});
 
+const strikeThru = (dirId) =>
+    document.getElementById(dirId).style['text-decoration'] = 'line-through';
+
 function randPlacement(map, ax) {
     let withinBounds =
         ((Math.random() - 0.5) * boundsDiff(map, ax)) * Math.random();
@@ -135,9 +138,6 @@ var firstRight = true;
 var firstIn = true;
 var firstOut = true;
 var firstRandom = true;
-
-const strikeThru = (dirId) =>
-    document.getElementById(dirId).style['text-decoration'] = 'line-through';
 
 window.onkeydown = function(e) {
     let keyCode = e.keyCode ? e.keyCode : e.which;
@@ -248,19 +248,19 @@ var marker    = addPointToMap(markerPos,
                               measureGap(map, markerPos),
                               "You'll never catch me!");
 
-setInterval(
-    function() {
-        let currentBounds = map.getBounds();
-        let newOpacity = 0.1;
-        markerPos = runAway(markerPos, markerEnd);
-        marker    = moveMarker(marker, markerPos, measureGap(map, markerPos));
-    }, speed
-);
+// setInterval(
+//     function() {
+//         let currentBounds = map.getBounds();
+//         let newOpacity = 0.1;
+//         markerPos = runAway(markerPos, markerEnd);
+//         marker    = moveMarker(marker, markerPos, measureGap(map, markerPos));
+//     }, speed
+// );
 
-setInterval(
-    function() {
-        markerEnd = pointOffscreen(map);
-        // console.log([boundsCntr(map, 'lat'), boundsCntr(map, 'lng')]);
-        // console.log(markerEnd);
-    }, 3000
-);
+// setInterval(
+//     function() {
+//         markerEnd = pointOffscreen(map);
+//         // console.log([boundsCntr(map, 'lat'), boundsCntr(map, 'lng')]);
+//         // console.log(markerEnd);
+//     }, 3000
+// );
