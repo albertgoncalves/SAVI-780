@@ -124,7 +124,6 @@ const circleOpts  = {color:           '#f03',
                      fillColor:       '#f03',
                      radius:           50000};
 
-// const speed       = 10000; // debug mode!
 const spdMv       = 50;
 const spdAdjDest  = 3000;
 var crntWrd       = empty;
@@ -139,9 +138,11 @@ var firstIn       = true;
 var firstOut      = true;
 var firstRandom   = true;
 
+// (QUASI) MAIN HERE WE GO
+
 window.onkeydown = function(e) {
-    let keyCode = e.keyCode ? e.keyCode : e.which;
-    let key     = keysFlip[keyCode];
+    let keyCode  = e.keyCode ? e.keyCode : e.which;
+    let key      = keysFlip[keyCode];
 
     if (key === 'enter') {
         if (crntWrd == 'random') {
@@ -155,8 +156,8 @@ window.onkeydown = function(e) {
 
         } else if (crntWrd == 'up') {
             let {0: x, 1: y} = coords;
-            let newX = x + adjustAx(map, 'lat', 0.25);
-            coords = [newX > 90 ? 90 : newX, y];
+            let newX         = x + adjustAx(map, 'lat', 0.25);
+            coords           = [newX > 90 ? 90 : newX, y];
 
             if (firstUp) {
                 strikeThru('up');
@@ -165,8 +166,8 @@ window.onkeydown = function(e) {
 
         } else if (crntWrd == 'down') {
             let {0: x, 1: y} = coords;
-            let newX = x - adjustAx(map, 'lat', 0.25);
-            coords = [newX < -90 ? -90 : newX, y];
+            let newX         = x - adjustAx(map, 'lat', 0.25);
+            coords           = [newX < -90 ? -90 : newX, y];
 
             if (firstDown) {
                 strikeThru('down');
@@ -175,8 +176,8 @@ window.onkeydown = function(e) {
 
         } else if (crntWrd == 'left') {
             let {0: x, 1: y} = coords;
-            let newY = y - adjustAx(map, 'lng', 0.20);
-            coords = [x, newY];
+            let newY         = y - adjustAx(map, 'lng', 0.20);
+            coords           = [x, newY];
 
             if (firstLeft) {
                 strikeThru('left');
@@ -185,8 +186,8 @@ window.onkeydown = function(e) {
 
         } else if (crntWrd == 'right') {
             let {0: x, 1: y} = coords;
-            let newY = y + adjustAx(map, 'lng', 0.20);
-            coords = [x, newY];
+            let newY         = y + adjustAx(map, 'lng', 0.20);
+            coords           = [x, newY];
 
             if (firstRight) {
                 strikeThru('right');
@@ -195,8 +196,8 @@ window.onkeydown = function(e) {
 
         } else if (crntWrd == 'in') {
             let newZoom = zoom + 1;
-            zoom = newZoom > tileOptions.maxZoom ? tileOptions.maxZoom
-                                                 : newZoom;
+            zoom        = newZoom > tileOptions.maxZoom ? tileOptions.maxZoom
+                                                        : newZoom;
             if (firstIn) {
                 strikeThru('in');
                 firstIn = false;
@@ -204,8 +205,8 @@ window.onkeydown = function(e) {
 
         } else if (crntWrd == 'out') {
             let newZoom = zoom - 1;
-            zoom = newZoom < 4 ? 4
-                               : newZoom;
+            zoom        = newZoom < 4 ? 4
+                                      : newZoom;
             if (firstOut) {
                 strikeThru('out');
                 firstOut = false;
@@ -215,7 +216,6 @@ window.onkeydown = function(e) {
             location.reload();
         }
 
-        // console.log(coords, zoom);
         map.setView(coords, zoom);
 
     } else if (key === 'space') {
@@ -254,16 +254,16 @@ var marker    = addPointToMap(markerPos,
 setInterval(
     function() {
         let currentBounds = map.getBounds();
-        let newOpacity = 0.1;
-        markerPos = runAway(markerPos, markerEnd);
-        marker    = moveMarker(marker, markerPos, measureGap(map, markerPos));
+        let newOpacity    = 0.1;
+        markerPos         = runAway(markerPos, markerEnd);
+        marker            = moveMarker(marker,
+                                       markerPos,
+                                       measureGap(map, markerPos));
     }, spdMv
 );
 
 setInterval(
     function() {
         markerEnd = pointOffscreen(map);
-        // console.log([boundsCntr(map, 'lat'), boundsCntr(map, 'lng')]);
-        // console.log(markerEnd);
     }, spdAdjDest
 );
