@@ -39,13 +39,13 @@ function randDiff(center, diff, mod) {
 }
 
 function randPointInView(currentBounds) {
-    var northLat = currentBounds._northEast.lat;
-    var southLat = currentBounds._southWest.lat;
-    var eastLng = currentBounds._northEast.lng;
-    var westLng = currentBounds._southWest.lng;
+    var northLat  = currentBounds._northEast.lat;
+    var southLat  = currentBounds._southWest.lat;
+    var eastLng   = currentBounds._northEast.lng;
+    var westLng   = currentBounds._southWest.lng;
 
-    var latDiff = northLat - southLat;
-    var lngDiff = eastLng - westLng;
+    var latDiff   = northLat - southLat;
+    var lngDiff   = eastLng - westLng;
 
     var centerLat = northLat - (latDiff / 2);
     var centerLng = eastLng - (lngDiff / 2);
@@ -117,16 +117,15 @@ var observations = [
     "You know how it goes."
     ];
 
-var coords = randCoords();
-var mapOptions = {
-    doubleClickZoom: false,
-    dragging: false,
-    keyboard: false,
-    touchZoom: false,
-    scrollWheelZoom: false,
-    tap: false,
-    zoomControl: false
-};
+var coords     =  randCoords();
+var mapOptions = {doubleClickZoom: false,
+                  dragging:        false,
+                  keyboard:        false,
+                  touchZoom:       false,
+                  scrollWheelZoom: false,
+                  tap:             false,
+                  zoomControl:     false};
+
 var map = L.map('map', mapOptions).setView(coords, randomZoom());
 // var map = L.map('map', mapOptions).setView([40, -74], randomZoom());
 var tileOptions = {maxZoom: 18};

@@ -109,9 +109,9 @@ function runAway(markerFrom, markerTo) {
     return [xNew, yNew];
 }
 
-const empty       = '';
-const tileUrl     = 'https://stamen-tiles.a.ssl.fastly.net/watercolor' +
-                    '/{z}/{x}/{y}.jpg';
+const empty       =  '';
+const tileUrl     =  'https://stamen-tiles.a.ssl.fastly.net/watercolor' +
+                     '/{z}/{x}/{y}.jpg';
 const tileOptions = {maxZoom:         18};
 const mapOptions  = {doubleClickZoom: false,
                      dragging:        false,
@@ -120,12 +120,13 @@ const mapOptions  = {doubleClickZoom: false,
                      scrollWheelZoom: false,
                      tap:             false,
                      zoomControl:     false};
-const circleOpts  = {color:      '#f03',
-                    fillColor:  '#f03',
-                    radius:      50000};
+const circleOpts  = {color:           '#f03',
+                     fillColor:       '#f03',
+                     radius:           50000};
 
 // const speed       = 10000; // debug mode!
-const speed       = 50;
+const spdMv       = 50;
+const spdAdjDest  = 3000;
 var crntWrd       = empty;
 var coords        = randCoords();
 var zoom          = randomZoom();
@@ -236,7 +237,10 @@ window.onkeydown = function(e) {
     assignInput(crntWrd);
 };
 
-assignInput('try typing some words!');
+assignInput('Try typing some words, ' +
+            'then press <strong>enter</strong>. ' +
+            "If all else fails: " +
+            '<strong>delete</strong> or <strong>esc</strong>!');
 
 L.tileLayer(tileUrl, tileOptions).addTo(map);
 
@@ -253,7 +257,7 @@ setInterval(
         let newOpacity = 0.1;
         markerPos = runAway(markerPos, markerEnd);
         marker    = moveMarker(marker, markerPos, measureGap(map, markerPos));
-    }, speed
+    }, spdMv
 );
 
 setInterval(
@@ -261,5 +265,5 @@ setInterval(
         markerEnd = pointOffscreen(map);
         // console.log([boundsCntr(map, 'lat'), boundsCntr(map, 'lng')]);
         // console.log(markerEnd);
-    }, 3000
+    }, spdAdjDest
 );
