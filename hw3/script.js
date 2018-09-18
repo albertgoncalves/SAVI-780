@@ -237,7 +237,7 @@ window.onkeydown = function(e) {
     assignInput(crntWrd);
 };
 
-assignInput('Try typing some words, ' +
+assignInput('Try typing a <span class="underline">word</span>, ' +
             'then press <strong>enter</strong>. ' +
             "If all else fails: " +
             '<strong>delete</strong> or <strong>esc</strong>!');

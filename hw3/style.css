@@ -36,6 +36,10 @@ div#input {
     width: 665px;
 }
 
+.underline {
+    border-bottom: 2px dashed;
+}
+
 .author {
     display: block;
     text-align: center;
