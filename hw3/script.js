@@ -2,7 +2,7 @@
 /* global keysFlip */
 /* global L        */
 
-/*jshint esversion: 6 */
+/* jshint esversion: 6 */
 
 const randPoint = (bound) => bound - Math.random() * (bound * 2);
 
@@ -77,13 +77,13 @@ function pointOffscreen(map) {
 function measureGap(map, markerPos) {
     let {0: latPos, 1: lngPos} = markerPos;
 
-    latBounds = boundsDiff(map, 'lat');
-    lngBounds = boundsDiff(map, 'lng');
-    latCntr   = boundsCntr(map, 'lat');
-    lngCntr   = boundsCntr(map, 'lng');
+    let latBounds = boundsDiff(map, 'lat');
+    let lngBounds = boundsDiff(map, 'lng');
+    let latCntr   = boundsCntr(map, 'lat');
+    let lngCntr   = boundsCntr(map, 'lng');
 
-    latRatio = Math.abs(latPos - latCntr) / (latBounds);
-    lngRatio = Math.abs(lngPos - lngCntr) / (lngBounds);
+    let latRatio = Math.abs(latPos - latCntr) / (latBounds);
+    let lngRatio = Math.abs(lngPos - lngCntr) / (lngBounds);
 
     let gapRatio = ((latRatio + lngRatio) / 2 + 0.3) * 0.85;
 
