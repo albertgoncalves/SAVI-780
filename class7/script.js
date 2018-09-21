@@ -6,6 +6,7 @@ const getResp    = (response) => response.json();
 const rowToPopup = (layer)    => layer.feature.properties.complaint_type;
 const loadData   = (borough)  => {
     let fullUrl  = dataUrl + '?borough=' + borough + params;
+
     fetch(fullUrl)
         .then(getResp)
         .then(getData);
