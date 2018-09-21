@@ -6,14 +6,12 @@ const getResp    = (response) => response.json();
 const rowToPopup = (layer)    => layer.feature.properties.complaint_type;
 const loadData   = (borough)  => {
     let fullUrl  = dataUrl + '?borough=' + borough + params;
-
     fetch(fullUrl)
         .then(getResp)
         .then(getData);
 };
 const getData    = (data)     => {
     let complaintData = L.geoJson(data);
-
     let _ = complaintLayer !== null ? complaintLayer.clearLayers()
                                     : null;
 
