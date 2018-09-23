@@ -3,6 +3,7 @@
 /* global L        */
 
 /* jshint esversion: 6 */
+/* jshint -W014 */
 
 const randPoint = (bound) => bound - Math.random() * (bound * 2);
 
@@ -32,18 +33,19 @@ const randPointInView = (currentBounds) => [randPlacement(map, 'lat'),
 // https://www.wrld3d.com/wrld.js/latest/docs/leaflet/L.Circle/
 const addPointToMap = (newPoint, circleOpts, newOpacity, text) =>
     L.circle(newPoint, circleOpts)
-      .addTo(map)
-      .setStyle({fillOpacity: newOpacity, opacity: newOpacity})
-      .bindPopup(text);
+     .addTo(map)
+     .setStyle({fillOpacity: newOpacity, opacity: newOpacity})
+     .bindPopup(text);
 
 const moveMarker = (marker, newPoint, newOpacity) =>
     marker.setLatLng(newPoint)
           .setStyle({fillOpacity: newOpacity, opacity: newOpacity});
 
-const getEdges = (map) => ({northEdge: map.getBounds()._northEast.lat,
-                            southEdge: map.getBounds()._southWest.lat,
-                            eastEdge:  map.getBounds()._northEast.lng,
-                            westEdge:  map.getBounds()._southWest.lng});
+const getEdges = (map) => ({ northEdge: map.getBounds()._northEast.lat
+                           , southEdge: map.getBounds()._southWest.lat
+                           , eastEdge:  map.getBounds()._northEast.lng
+                           , westEdge:  map.getBounds()._southWest.lng
+                           });
 
 const strikeThru = (dirId) =>
     document.getElementById(dirId).style['text-decoration'] = 'line-through';
@@ -56,10 +58,11 @@ function randPlacement(map, ax) {
 }
 
 function pointOffscreen(map) {
-    let {0: northEdge,
-         1: southEdge,
-         2: eastEdge,
-         3: westEdge} = getEdges(map);
+    let { 0: northEdge
+        , 1: southEdge
+        , 2: eastEdge
+        , 3: westEdge
+        } = getEdges(map);
 
     let xNew = randPoint(90);
     let yNew = randPoint(180);
@@ -82,16 +85,16 @@ function measureGap(map, markerPos) {
     let latCntr   = boundsCntr(map, 'lat');
     let lngCntr   = boundsCntr(map, 'lng');
 
-    let latRatio = Math.abs(latPos - latCntr) / (latBounds);
-    let lngRatio = Math.abs(lngPos - lngCntr) / (lngBounds);
+    let latRatio  = Math.abs(latPos - latCntr) / (latBounds);
+    let lngRatio  = Math.abs(lngPos - lngCntr) / (lngBounds);
 
-    let gapRatio = ((latRatio + lngRatio) / 2 + 0.3) * 0.85;
+    let gapRatio  = ((latRatio + lngRatio) / 2 + 0.3) * 0.85;
 
-    gapRatio = gapRatio < 0.02 ? 0.02
-                               : gapRatio;
+    gapRatio      = gapRatio < 0.02 ? 0.02
+                                    : gapRatio;
 
-    gapRatio = gapRatio > 1    ? 1
-                               : gapRatio;
+    gapRatio      = gapRatio > 1    ? 1
+                                    : gapRatio;
 
     return gapRatio;
 }
@@ -109,20 +112,23 @@ function runAway(markerFrom, markerTo) {
     return [xNew, yNew];
 }
 
-const empty       =  '';
-const tileUrl     =  'https://stamen-tiles.a.ssl.fastly.net/watercolor' +
-                     '/{z}/{x}/{y}.jpg';
-const tileOptions = {maxZoom:         18};
-const mapOptions  = {doubleClickZoom: false,
-                     dragging:        false,
-                     keyboard:        false,
-                     touchZoom:       false,
-                     scrollWheelZoom: false,
-                     tap:             false,
-                     zoomControl:     false};
-const circleOpts  = {color:           '#f03',
-                     fillColor:       '#f03',
-                     radius:           50000};
+const empty       = '';
+const tileUrl     = 'https://stamen-tiles.a.ssl.fastly.net/watercolor' +
+                    '/{z}/{x}/{y}.jpg';
+const tileOptions = { maxZoom:         18
+                    };
+const mapOptions  = { doubleClickZoom: false
+                    , dragging:        false
+                    , keyboard:        false
+                    , touchZoom:       false
+                    , scrollWheelZoom: false
+                    , tap:             false
+                    , zoomControl:     false
+                    };
+const circleOpts  = { color:           '#f03'
+                    , fillColor:       '#f03'
+                    , radius:           50000
+                    };
 
 const spdMv       = 50;
 const spdAdjDest  = 3000;
@@ -246,19 +252,21 @@ L.tileLayer(tileUrl, tileOptions).addTo(map);
 
 var markerPos = randPointInView(map.getBounds());
 var markerEnd = pointOffscreen(map);
-var marker    = addPointToMap(markerPos,
-                              circleOpts,
-                              measureGap(map, markerPos),
-                              "You'll never catch me!");
+var marker    = addPointToMap( markerPos
+                             , circleOpts
+                             , measureGap(map, markerPos)
+                             , "You'll never catch me!"
+                             );
 
 setInterval(
     function() {
         let currentBounds = map.getBounds();
         let newOpacity    = 0.1;
         markerPos         = runAway(markerPos, markerEnd);
-        marker            = moveMarker(marker,
-                                       markerPos,
-                                       measureGap(map, markerPos));
+        marker            = moveMarker( marker
+                                      , markerPos
+                                      , measureGap(map, markerPos)
+                                      );
     }, spdMv
 );
 
