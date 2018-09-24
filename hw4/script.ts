@@ -4,25 +4,78 @@ interface TileOptions {
     maxZoom: number;
 }
 
-const rgbToHex = (rgb) => {
-    const hex = Number(rgb).toString(16);
+const hslToRgb = (h, s, l): number[] => {
+    if (s === 0) {
+        // r = g = b = l; // achromatic
+        return [l, l, l];
+    } else {
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+
+        const r = hue2rgb(p, q, h + (1 / 3));
+        const g = hue2rgb(p, q, h);
+        const b = hue2rgb(p, q, h - (1 / 3));
+
+        return [r * 255, g * 255, b * 255];
+    }
+};
+
+const hue2rgb = (p, q, t): number => {
+    if (t < 0) {
+        t += 1;
+    } else if (t > 1) {
+        t -= 1;
+    }
+
+    if (t < (1 / 6)) {
+        return p + (q - p) * 6 * t;
+    } else if (t < (1 / 2)) {
+        return q;
+    } else if (t < (2 / 3)) {
+        return p + (q - p) * ((2 / 3) - t) * 6;
+    } else {
+        return p;
+    }
+};
+
+const rgbToHex = (rgb: number): string => {
+    const hex  = Number(rgb).toString(16);
     return hex.length < 2 ? "0" + hex
                           : hex;
 };
 
-const getColor = (featureLayer) => {
-    const featIn: string = featureLayer.properties.rt_symbol;
-    return featIn === "G" ? "rbg(0,0,0,1)" // "#FF5500"
-                          : "#38A800";
+const fullColorHex = (r: number, g: number, b: number): string => {
+    const red   = rgbToHex(Math.floor(r));
+    const green = rgbToHex(Math.floor(g));
+    const blue  = rgbToHex(Math.floor(b));
+    return "#" + red + green + blue;
 };
+
+const applyHslToHex = (h: number, s: number, l: number): string => {
+    const rgb = hslToRgb(h, s, l);
+    console.log(rgb);
+    return fullColorHex(rgb[0], rgb[1], rgb[2]);
+};
+
+const getColor = (featureLayer): string => {
+    const featIn: string = featureLayer.properties.rt_symbol;
+    return featIn === "G" ? "#38A800"
+                          : applyHslToHex( Math.random()
+                                         , Math.random()
+                                         , Math.random()
+                                         ); // "#FF5500"
+};
+
 const styleLines = (featureLayer) => {
     console.log(getColor(featureLayer));
     return { color  : getColor(featureLayer)
-           , opacity: 0.7
+           , opacity: Math.random()
            , weight : 10
            };
 };
+
 const getResp = (response) => response.json();
+
 const getData = (data)     => {
     const mapData = L.geoJson(
         data, {style: styleLines}
@@ -32,6 +85,7 @@ const getData = (data)     => {
     console.log(data);
     console.log(mapData);
 };
+
 const loadData = (url) => {
     fetch(url)
         .then(getResp)
@@ -45,7 +99,7 @@ const tileUrl: string  = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
                          );
 const dataUrl: string  = ( "https://data.cityofnewyork.us/resource/"
                          + "s7zz-qmyz.geojson"
-                         + "?$limit=15"
+                         + "?$limit=65"
                          );
 
 const map = L.map("map").setView(origin, 5);
