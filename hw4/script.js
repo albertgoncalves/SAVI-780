@@ -1,17 +1,16 @@
+// $ tslint script.ts ; tsc script.ts
 // via https://gist.github.com/mjackson/5311256
 var hslToRgb = function (h, s, l) {
-    if (s === 0) {
-        // r = g = b = l; // achromatic
-        return [l, l, l];
-    }
-    else {
-        var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        var p = 2 * l - q;
-        var r = hue2rgb(p, q, h + (1 / 3));
-        var g = hue2rgb(p, q, h);
-        var b = hue2rgb(p, q, h - (1 / 3));
+    var hslHelper = function (hh, ss, ll) {
+        var q = ll < 0.5 ? ll * (1 + ss) : ll + ss - ll * ss;
+        var p = 2 * ll - q;
+        var r = hue2rgb(p, q, hh + (1 / 3));
+        var g = hue2rgb(p, q, hh);
+        var b = hue2rgb(p, q, hh - (1 / 3));
         return [r * 255, g * 255, b * 255];
-    }
+    };
+    return s === 0 ? [l, l, l]
+        : hslHelper(h, s, l);
 };
 var hue2rgb = function (p, q, t) {
     var tt = t < 0 ? t + 1
@@ -21,15 +20,6 @@ var hue2rgb = function (p, q, t) {
         : tt < (1 / 2) ? q
             : tt < (2 / 3) ? p + (q - p) * ((2 / 3) - tt) * 6
                 : p;
-    // if (tt < (1 / 6)) {
-    //     return p + (q - p) * 6 * tt;
-    // } else if (tt < (1 / 2)) {
-    //     return q;
-    // } else if (tt < (2 / 3)) {
-    //     return p + (q - p) * ((2 / 3) - tt) * 6;
-    // } else {
-    //     return p;
-    // }
 };
 var rgbToHex = function (rgb) {
     var hex = Number(rgb).toString(16);

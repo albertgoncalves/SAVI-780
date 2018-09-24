@@ -1,3 +1,5 @@
+// $ tslint script.ts ; tsc script.ts
+
 declare var L: any;
 
 interface TileOptions {
@@ -7,19 +9,19 @@ interface TileOptions {
 // via https://gist.github.com/mjackson/5311256
 
 const hslToRgb = (h: number, s: number, l: number): number[] => {
-    if (s === 0) {
-        // r = g = b = l; // achromatic
-        return [l, l, l];
-    } else {
-        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        const p = 2 * l - q;
+    const hslHelper = (hh, ss, ll) => {
+        const q = ll < 0.5 ? ll * (1 + ss) : ll + ss - ll * ss;
+        const p = 2 * ll - q;
 
-        const r = hue2rgb(p, q, h + (1 / 3));
-        const g = hue2rgb(p, q, h);
-        const b = hue2rgb(p, q, h - (1 / 3));
+        const r = hue2rgb(p, q, hh + (1 / 3));
+        const g = hue2rgb(p, q, hh);
+        const b = hue2rgb(p, q, hh - (1 / 3));
 
         return [r * 255, g * 255, b * 255];
-    }
+    };
+
+    return s === 0 ? [l, l, l]
+                   : hslHelper(h, s, l);
 };
 
 const hue2rgb = (p: number, q: number, t: number): number => {
