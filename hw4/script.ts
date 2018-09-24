@@ -14,7 +14,6 @@ const hue2rgb = (pqt: number[]): number => {
     const tt = t < 0 ? t + 1
              : t > 1 ? t - 1
                      : t;
-
     return tt < (1 / 6) ? p + (q - p) * 6 * tt
          : tt < (1 / 2) ? q
          : tt < (2 / 3) ? p + (q - p) * ((2 / 3) - tt) * 6
