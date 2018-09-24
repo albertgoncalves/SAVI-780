@@ -2,30 +2,15 @@
 
 declare var L: any;
 
-interface TileOptions {
-    maxZoom: number;
-    opacity: number;
-}
-
 // via https://gist.github.com/mjackson/5311256
 
 const hslToRgb = (h: number, s: number, l: number): number[] => {
-    const hslHelper = (hh: number , ss: number , ll: number ): number[] => {
-        const q = ll < 0.5 ? ll * (1 + ss) : ll + ss - ll * ss;
-        const p = 2 * ll - q;
-
-        const r = hue2rgb(p, q, hh + (1 / 3));
-        const g = hue2rgb(p, q, hh);
-        const b = hue2rgb(p, q, hh - (1 / 3));
-
-        return [r, g, b].map((x) => x * 255);
-    };
-
     return s === 0 ? [l, l, l]
                    : hslHelper(h, s, l);
 };
 
-const hue2rgb = (p: number, q: number, t: number): number => {
+const hue2rgb = (pqt: number[]): number => {
+    const [p, q, t] = pqt;
     const tt = t < 0 ? t + 1
              : t > 1 ? t - 1
                      : t;
@@ -36,6 +21,17 @@ const hue2rgb = (p: number, q: number, t: number): number => {
                         : p;
 };
 
+const hslHelper = (hh: number, ss: number, ll: number): number[] => {
+    const q   = ll < 0.5 ? ll * (1 + ss)
+                         : ll + ss - ll * ss;
+    const p   = 2 * ll - q;
+    const rgb = [ [p, q, hh + (1 / 3)] // r
+                , [p, q, hh          ] // g
+                , [p, q, hh - (1 / 3)] // b
+                ];
+    return rgb.map((x) => hue2rgb(x) * 255);
+};
+
 const rgbToHex = (rgb: number): string => {
     const  hex = Number(rgb).toString(16);
     return hex.length < 2 ? "0" + hex
@@ -43,22 +39,20 @@ const rgbToHex = (rgb: number): string => {
 };
 
 const fullColorHex = (r: number, g: number, b: number): string => {
-    const red   = rgbToHex(Math.floor(r));
-    const green = rgbToHex(Math.floor(g));
-    const blue  = rgbToHex(Math.floor(b));
+    const [red, green, blue] = [r, g, b].map((x) => rgbToHex(x));
     return "#" + red + green + blue;
 };
 
 const applyHslToHex = (h: number, s: number, l: number): string => {
-    const [r, g, b] = hslToRgb(h, s, l);
+    const [r, g, b] = hslToRgb(h, s, l).map((x) => Math.floor(x));
     return fullColorHex(r, g, b);
 };
 
 const getColor = (featIn: string): string => {
     return featIn === "0" ? "#38A800"
                           : applyHslToHex( Math.random()
-                                         , Math.random()
-                                         , Math.random()
+                                         , (0.75 * Math.random()) + 0.25
+                                         , (0.25 * Math.random()) + 0.4
                                          );
 };
 
@@ -91,26 +85,27 @@ const loadData = (mapVar, url: string) => {
         .then(getData (mapVar));
 };
 
-const origin : number[] = [40.7128, -74.0060];
-const tileOpt: object   = { maxZoom: 18
-                          , opacity: 0.5
-                          } as TileOptions;
-const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
-                          + "{z}/{x}/{y}.png"
-                          );
-// const tileUrl: string   = ( "https://b.tiles.mapbox.com/v4/mapbox.pencil/"
-//                           + "{z}/{x}/{y}.png?access_token="
-//                           + "pk.eyJ1IjoienZlcmlrIiwiYSI6IjVLMGxwbGsifQ."
-//                           + "pdb83NbjTrfl9ibbdjPSsg"
-//                           );
-const dataUrl: string   = ( "https://data.cityofnewyork.us/resource/"
-                          + "s7zz-qmyz.geojson"
-                          + "?$limit=100"
-                          );
+interface TileOptions {
+    maxZoom: number;
+    opacity: number;
+}
 
-const map = L.map("map").setView(origin, 5);
+const origin : number[]    = [  40.7128
+                             , -74.0060
+                             ];
+const tileOpt: TileOptions = { maxZoom: 18
+                             , opacity: 0.5
+                             };
+const tileUrl: string      = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
+                             + "{z}/{x}/{y}.png"
+                             );
+const dataUrl: string      = ( "https://data.cityofnewyork.us/resource/"
+                             + "s7zz-qmyz.geojson"
+                             + "?$limit=100"
+                             );
 
 // MAIN
 
+const map = L.map("map").setView(origin, 5);
 L.tileLayer(tileUrl, tileOpt).addTo(map);
 loadData(map, dataUrl);
