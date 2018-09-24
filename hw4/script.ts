@@ -4,7 +4,7 @@ interface TileOptions {
     maxZoom: number;
 }
 
-const hslToRgb = (h, s, l): number[] => {
+const hslToRgb = (h: number, s: number, l: number): number[] => {
     if (s === 0) {
         // r = g = b = l; // achromatic
         return [l, l, l];
@@ -20,7 +20,7 @@ const hslToRgb = (h, s, l): number[] => {
     }
 };
 
-const hue2rgb = (p, q, t): number => {
+const hue2rgb = (p: number, q: number, t: number): number => {
     if (t < 0) {
         t += 1;
     } else if (t > 1) {
@@ -53,7 +53,7 @@ const fullColorHex = (r: number, g: number, b: number): string => {
 
 const applyHslToHex = (h: number, s: number, l: number): string => {
     const rgb = hslToRgb(h, s, l);
-    console.log(rgb);
+    // console.log(rgb);
     return fullColorHex(rgb[0], rgb[1], rgb[2]);
 };
 
@@ -63,14 +63,14 @@ const getColor = (featureLayer): string => {
                           : applyHslToHex( Math.random()
                                          , Math.random()
                                          , Math.random()
-                                         ); // "#FF5500"
+                                         );
 };
 
 const styleLines = (featureLayer) => {
-    console.log(getColor(featureLayer));
+    // console.log(getColor(featureLayer));
     return { color  : getColor(featureLayer)
-           , opacity: Math.random()
-           , weight : 10
+           , opacity: (0.5 * Math.random()) + 0.5
+           , weight : 20
            };
 };
 
@@ -83,7 +83,7 @@ const getData = (data)     => {
     mapData.addTo(map);
     map.fitBounds(mapData.getBounds());
     console.log(data);
-    console.log(mapData);
+    // console.log(mapData);
 };
 
 const loadData = (url) => {

@@ -45,19 +45,19 @@ var fullColorHex = function (r, g, b) {
 };
 var applyHslToHex = function (h, s, l) {
     var rgb = hslToRgb(h, s, l);
-    console.log(rgb);
+    // console.log(rgb);
     return fullColorHex(rgb[0], rgb[1], rgb[2]);
 };
 var getColor = function (featureLayer) {
     var featIn = featureLayer.properties.rt_symbol;
     return featIn === "G" ? "#38A800"
-        : applyHslToHex(Math.random(), Math.random(), Math.random()); // "#FF5500"
+        : applyHslToHex(Math.random(), Math.random(), Math.random());
 };
 var styleLines = function (featureLayer) {
-    console.log(getColor(featureLayer));
+    // console.log(getColor(featureLayer));
     return { color: getColor(featureLayer),
-        opacity: Math.random(),
-        weight: 10
+        opacity: (0.5 * Math.random()) + 0.5,
+        weight: 20
     };
 };
 var getResp = function (response) { return response.json(); };
@@ -66,7 +66,7 @@ var getData = function (data) {
     mapData.addTo(map);
     map.fitBounds(mapData.getBounds());
     console.log(data);
-    console.log(mapData);
+    // console.log(mapData);
 };
 var loadData = function (url) {
     fetch(url)
