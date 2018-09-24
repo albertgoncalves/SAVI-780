@@ -7,7 +7,7 @@ var hslToRgb = function (h, s, l) {
         var r = hue2rgb(p, q, hh + (1 / 3));
         var g = hue2rgb(p, q, hh);
         var b = hue2rgb(p, q, hh - (1 / 3));
-        return [r * 255, g * 255, b * 255];
+        return [r, g, b].map(function (x) { return x * 255; });
     };
     return s === 0 ? [l, l, l]
         : hslHelper(h, s, l);
@@ -37,15 +37,16 @@ var applyHslToHex = function (h, s, l) {
     return fullColorHex(r, g, b);
 };
 var getColor = function (featIn) {
-    return featIn === "G" ? "#38A800"
+    return featIn === "0" ? "#38A800"
         : applyHslToHex(Math.random(), Math.random(), Math.random());
 };
 // via https://gis.stackexchange.com/questions/243136/geojson-add-and-format-line-features-to-a-leaflet-map
 var styleLines = function (featureLayer) {
     // console.log(getColor(featureLayer));
     return { color: getColor(featureLayer.properties.rt_symbol),
-        opacity: (0.5 * Math.random()) + 0.5,
-        weight: 20
+        lineJoin: "round",
+        opacity: (0.2 * Math.random()) + 0.8,
+        weight: 10
     };
 };
 var getResp = function (response) { return response.json(); };
@@ -56,19 +57,26 @@ var getData = function (mapVar) { return function (data) {
     console.log(data);
     console.log(mapData);
 }; };
-var loadData = function (url) {
+var loadData = function (mapVar, url) {
     fetch(url)
         .then(getResp)
-        .then(getData(map));
+        .then(getData(mapVar));
 };
 var origin = [40.7128, -74.0060];
-var tileOpt = { maxZoom: 18 };
+var tileOpt = { maxZoom: 18,
+    opacity: 0.5
+};
 var tileUrl = ("https://stamen-tiles.a.ssl.fastly.net/toner/"
     + "{z}/{x}/{y}.png");
+// const tileUrl: string   = ( "https://b.tiles.mapbox.com/v4/mapbox.pencil/"
+//                           + "{z}/{x}/{y}.png?access_token="
+//                           + "pk.eyJ1IjoienZlcmlrIiwiYSI6IjVLMGxwbGsifQ."
+//                           + "pdb83NbjTrfl9ibbdjPSsg"
+//                           );
 var dataUrl = ("https://data.cityofnewyork.us/resource/"
     + "s7zz-qmyz.geojson"
-    + "?$limit=65");
+    + "?$limit=100");
 var map = L.map("map").setView(origin, 5);
 // MAIN
 L.tileLayer(tileUrl, tileOpt).addTo(map);
-loadData(dataUrl);
+loadData(map, dataUrl);
