@@ -21,13 +21,13 @@ const hue2rgb = (pqt: number[]): number => {
 };
 
 const hslHelper = (hh: number, ss: number, ll: number): number[] => {
-    const q   = ll < 0.5 ? ll * (1 + ss)
-                         : ll + ss - ll * ss;
-    const p   = 2 * ll - q;
-    const rgb = [ [p, q, hh + (1 / 3)] // r
-                , [p, q, hh          ] // g
-                , [p, q, hh - (1 / 3)] // b
-                ];
+    const q = ll < 0.5 ? ll * (1 + ss)
+                       : ll + ss - ll * ss;
+    const p = 2 * ll - q;
+    const rgb: number[][] = [ [p, q, hh + (1 / 3)] // r
+                            , [p, q, hh          ] // g
+                            , [p, q, hh - (1 / 3)] // b
+                            ];
     return rgb.map((x) => hue2rgb(x) * 255);
 };
 
@@ -84,24 +84,23 @@ const loadData = (mapVar, url: string) => {
         .then(getData (mapVar));
 };
 
-interface TileOptions {
-    maxZoom: number;
-    opacity: number;
-}
+interface TileOpts { maxZoom: number;
+                     opacity: number;
+                   }
 
-const origin : number[]    = [  40.7128
-                             , -74.0060
-                             ];
-const tileOpt: TileOptions = { maxZoom: 18
-                             , opacity: 0.5
-                             };
-const tileUrl: string      = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
-                             + "{z}/{x}/{y}.png"
-                             );
-const dataUrl: string      = ( "https://data.cityofnewyork.us/resource/"
-                             + "s7zz-qmyz.geojson"
-                             + "?$limit=100"
-                             );
+const origin : number[] = [  40.7128
+                          , -74.0060
+                          ];
+const tileOpt: TileOpts = { maxZoom: 18
+                          , opacity: 0.5
+                          };
+const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
+                          + "{z}/{x}/{y}.png"
+                          );
+const dataUrl: string   = ( "https://data.cityofnewyork.us/resource/"
+                          + "s7zz-qmyz.geojson"
+                          + "?$limit=100"
+                          );
 
 // MAIN
 
