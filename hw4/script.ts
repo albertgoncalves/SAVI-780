@@ -69,9 +69,9 @@ const styleLines = (featureLayer): object => {
 const getResp = (response): object => response.json();
 
 const getData = (mapVar) => (data: object) => {
-    const mapData = L.geoJson(
-        data, {style: styleLines}
-    );
+    const mapData = L.geoJson( data
+                             , {style: styleLines}
+                             );
     mapData.addTo(mapVar);
     mapVar.fitBounds(mapData.getBounds());
     console.log(data);

@@ -1,6 +1,7 @@
 /* global L */
 
 /* jshint esversion: 6 */
+/* jshint -W014 */
 
 const map     = L.map('map').setView([34.03, -82.20], 5);
 const tileUrl = 'https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png';
@@ -25,12 +26,13 @@ fetch(dataUrl)
         }
     );
 
-mouseEvents = ['mousedown',
-               'mouseup',
-               'preclick',
-               'click',
-               'dblclick',
-               'moveend'];
+mouseEvents = [ 'mousedown'
+              , 'mouseup'
+              , 'preclick'
+              , 'click'
+              , 'dblclick'
+              , 'moveend'
+              ];
 
 mouseEvents.forEach(
     (event) => map.on(event, () => console.log(event))
