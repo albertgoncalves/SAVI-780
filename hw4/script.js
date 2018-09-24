@@ -1,3 +1,4 @@
+// via https://gist.github.com/mjackson/5311256
 var hslToRgb = function (h, s, l) {
     if (s === 0) {
         // r = g = b = l; // achromatic
@@ -13,24 +14,22 @@ var hslToRgb = function (h, s, l) {
     }
 };
 var hue2rgb = function (p, q, t) {
-    if (t < 0) {
-        t += 1;
-    }
-    else if (t > 1) {
-        t -= 1;
-    }
-    if (t < (1 / 6)) {
-        return p + (q - p) * 6 * t;
-    }
-    else if (t < (1 / 2)) {
-        return q;
-    }
-    else if (t < (2 / 3)) {
-        return p + (q - p) * ((2 / 3) - t) * 6;
-    }
-    else {
-        return p;
-    }
+    var tt = t < 0 ? t + 1
+        : t > 1 ? t - 1
+            : t;
+    return tt < (1 / 6) ? p + (q - p) * 6 * tt
+        : tt < (1 / 2) ? q
+            : tt < (2 / 3) ? p + (q - p) * ((2 / 3) - tt) * 6
+                : p;
+    // if (tt < (1 / 6)) {
+    //     return p + (q - p) * 6 * tt;
+    // } else if (tt < (1 / 2)) {
+    //     return q;
+    // } else if (tt < (2 / 3)) {
+    //     return p + (q - p) * ((2 / 3) - tt) * 6;
+    // } else {
+    //     return p;
+    // }
 };
 var rgbToHex = function (rgb) {
     var hex = Number(rgb).toString(16);
@@ -44,34 +43,33 @@ var fullColorHex = function (r, g, b) {
     return "#" + red + green + blue;
 };
 var applyHslToHex = function (h, s, l) {
-    var rgb = hslToRgb(h, s, l);
-    // console.log(rgb);
-    return fullColorHex(rgb[0], rgb[1], rgb[2]);
+    var _a = hslToRgb(h, s, l), r = _a[0], g = _a[1], b = _a[2];
+    return fullColorHex(r, g, b);
 };
-var getColor = function (featureLayer) {
-    var featIn = featureLayer.properties.rt_symbol;
+var getColor = function (featIn) {
     return featIn === "G" ? "#38A800"
         : applyHslToHex(Math.random(), Math.random(), Math.random());
 };
+// via https://gis.stackexchange.com/questions/243136/geojson-add-and-format-line-features-to-a-leaflet-map
 var styleLines = function (featureLayer) {
     // console.log(getColor(featureLayer));
-    return { color: getColor(featureLayer),
+    return { color: getColor(featureLayer.properties.rt_symbol),
         opacity: (0.5 * Math.random()) + 0.5,
         weight: 20
     };
 };
 var getResp = function (response) { return response.json(); };
-var getData = function (data) {
+var getData = function (mapVar) { return function (data) {
     var mapData = L.geoJson(data, { style: styleLines });
-    mapData.addTo(map);
-    map.fitBounds(mapData.getBounds());
+    mapData.addTo(mapVar);
+    mapVar.fitBounds(mapData.getBounds());
     console.log(data);
-    // console.log(mapData);
-};
+    console.log(mapData);
+}; };
 var loadData = function (url) {
     fetch(url)
         .then(getResp)
-        .then(getData);
+        .then(getData(map));
 };
 var origin = [40.7128, -74.0060];
 var tileOpt = { maxZoom: 18 };

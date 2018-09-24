@@ -4,6 +4,8 @@ interface TileOptions {
     maxZoom: number;
 }
 
+// via https://gist.github.com/mjackson/5311256
+
 const hslToRgb = (h: number, s: number, l: number): number[] => {
     if (s === 0) {
         // r = g = b = l; // achromatic
@@ -21,21 +23,14 @@ const hslToRgb = (h: number, s: number, l: number): number[] => {
 };
 
 const hue2rgb = (p: number, q: number, t: number): number => {
-    if (t < 0) {
-        t += 1;
-    } else if (t > 1) {
-        t -= 1;
-    }
+    const tt = t < 0 ? t + 1
+                     : t > 1 ? t - 1
+                             : t;
 
-    if (t < (1 / 6)) {
-        return p + (q - p) * 6 * t;
-    } else if (t < (1 / 2)) {
-        return q;
-    } else if (t < (2 / 3)) {
-        return p + (q - p) * ((2 / 3) - t) * 6;
-    } else {
-        return p;
-    }
+    return tt < (1 / 6) ? p + (q - p) * 6 * tt
+         : tt < (1 / 2) ? q
+         : tt < (2 / 3) ? p + (q - p) * ((2 / 3) - tt) * 6
+         : p;
 };
 
 const rgbToHex = (rgb: number): string => {
@@ -52,13 +47,11 @@ const fullColorHex = (r: number, g: number, b: number): string => {
 };
 
 const applyHslToHex = (h: number, s: number, l: number): string => {
-    const rgb = hslToRgb(h, s, l);
-    // console.log(rgb);
-    return fullColorHex(rgb[0], rgb[1], rgb[2]);
+    const [r, g, b] = hslToRgb(h, s, l);
+    return fullColorHex(r, g, b);
 };
 
-const getColor = (featureLayer): string => {
-    const featIn: string = featureLayer.properties.rt_symbol;
+const getColor = (featIn: string): string => {
     return featIn === "G" ? "#38A800"
                           : applyHslToHex( Math.random()
                                          , Math.random()
@@ -66,41 +59,43 @@ const getColor = (featureLayer): string => {
                                          );
 };
 
-const styleLines = (featureLayer) => {
+// via https://gis.stackexchange.com/questions/243136/geojson-add-and-format-line-features-to-a-leaflet-map
+
+const styleLines = (featureLayer): object => {
     // console.log(getColor(featureLayer));
-    return { color  : getColor(featureLayer)
+    return { color  : getColor(featureLayer.properties.rt_symbol)
            , opacity: (0.5 * Math.random()) + 0.5
            , weight : 20
            };
 };
 
-const getResp = (response) => response.json();
+const getResp = (response): object => response.json();
 
-const getData = (data)     => {
+const getData = (mapVar) => (data: object) => {
     const mapData = L.geoJson(
         data, {style: styleLines}
     );
-    mapData.addTo(map);
-    map.fitBounds(mapData.getBounds());
+    mapData.addTo(mapVar);
+    mapVar.fitBounds(mapData.getBounds());
     console.log(data);
-    // console.log(mapData);
+    console.log(mapData);
 };
 
-const loadData = (url) => {
+const loadData = (url: string) => {
     fetch(url)
         .then(getResp)
-        .then(getData);
+        .then(getData (map));
 };
 
-const origin: number[] = [40.7128, -74.0060];
-const tileOpt: object  = {maxZoom: 18} as TileOptions;
-const tileUrl: string  = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
-                         + "{z}/{x}/{y}.png"
-                         );
-const dataUrl: string  = ( "https://data.cityofnewyork.us/resource/"
-                         + "s7zz-qmyz.geojson"
-                         + "?$limit=65"
-                         );
+const origin : number[] = [40.7128, -74.0060];
+const tileOpt: object   = {maxZoom: 18} as TileOptions;
+const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
+                          + "{z}/{x}/{y}.png"
+                          );
+const dataUrl: string   = ( "https://data.cityofnewyork.us/resource/"
+                          + "s7zz-qmyz.geojson"
+                          + "?$limit=65"
+                          );
 
 const map = L.map("map").setView(origin, 5);
 
