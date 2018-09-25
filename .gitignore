@@ -5,3 +5,4 @@ assets
 hw*
 !hw4
 *.geojson
+*.txt
