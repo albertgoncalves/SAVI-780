@@ -1,3 +1,4 @@
+// $ tslint colorfuns.ts ; tsc colorfuns.ts
 // via https://gist.github.com/mjackson/5311256
 var hslToRgb = function (h, s, l) {
     var hslHelper = function (hh, ss, ll) {
