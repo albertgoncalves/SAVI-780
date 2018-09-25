@@ -1,5 +1,7 @@
 // $ tslint script.ts ; tsc script.ts
 
+test
+
 declare var L: any;
 
 // via https://gist.github.com/mjackson/5311256
