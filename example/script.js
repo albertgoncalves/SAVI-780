@@ -16,7 +16,6 @@ L.tileLayer(tileUrl, tileOpt).addTo(map);
 const getResp = (response) => response.json();            // this implies the
 const getData = (data)     => L.geoJson(data).addTo(map); // values will be
                                                           // returned
-
 fetch(dataUrl)
     .then(getResp)
     .then(getData)
