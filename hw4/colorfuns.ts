@@ -1,3 +1,5 @@
+// $ tslint colorfuns.ts ; tsc colorfuns.ts
+
 // via https://gist.github.com/mjackson/5311256
 
 const hslToRgb = (h: number, s: number, l: number): number[] => {
