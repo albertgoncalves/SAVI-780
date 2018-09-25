@@ -44,43 +44,45 @@ const rgbToHex = (r: number, g: number, b: number): string => {
     return "#" + red + green + blue;
 };
 
+// 0 <= h, s, l <= 1
 const hslToHex = (h: number, s: number, l: number): string => {
     const [r, g, b] = hslToRgb(h, s, l).map((x) => Math.floor(x));
     return rgbToHex(r, g, b);
 };
 
-const getColor = (featIn: string): string => {
-    return featIn === "0" ? "#38A800"
-                          : hslToHex( Math.random()
-                                    , (0.75 * Math.random()) + 0.25
-                                    , (0.25 * Math.random()) + 0.4
-                                    );
-};
-
 // via https://gis.stackexchange.com/questions/243136/geojson-add-and-format-line-features-to-a-leaflet-map
 
-const styleLines = (featureLayer): object => {
-    // console.log(getColor(featureLayer));
-    return { color    : getColor(featureLayer.properties.rt_symbol)
-           , lineJoin : "round"
-           , opacity  : (0.2 * Math.random()) + 0.8
-           , weight   : 10
-           };
-};
-
-const getResp = (response): object => response.json();
-
-const getData = (mapVar) => (data: object) => {
-    const mapData = L.geoJson( data
-                             , {style: styleLines}
-                             );
-    mapData.addTo(mapVar);
-    mapVar.fitBounds(mapData.getBounds());
-    console.log(data);
-    console.log(mapData);
-};
-
 const loadData = (mapVar, url: string) => {
+
+    const getResp = (response): object => response.json();
+
+    const getColor = (featIn: string): string => {
+        return featIn === "0" ? "#38A800"
+                              : hslToHex( Math.random()
+                                        , (0.75 * Math.random()) + 0.25
+                                        , (0.25 * Math.random()) + 0.4
+                                        );
+    };
+
+    const styleLines = (featureLayer): object => {
+        // console.log(getColor(featureLayer));
+        return { color    : getColor(featureLayer.properties.rt_symbol)
+               , lineJoin : "round"
+               , opacity  : (0.2 * Math.random()) + 0.8
+               , weight   : 10
+               };
+    };
+
+    const getData = (aMapVar) => (data: object) => {
+        const mapData = L.geoJson( data
+                                 , {style: styleLines}
+                                 );
+        mapData.addTo(aMapVar);
+        aMapVar.fitBounds(mapData.getBounds());
+        console.log(data);
+        console.log(mapData);
+    };
+
     fetch(url)
         .then(getResp)
         .then(getData (mapVar));

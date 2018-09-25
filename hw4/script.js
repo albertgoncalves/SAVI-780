@@ -35,32 +35,33 @@ var rgbToHex = function (r, g, b) {
     var _a = [r, g, b].map(function (x) { return rgbHelper(x); }), red = _a[0], green = _a[1], blue = _a[2];
     return "#" + red + green + blue;
 };
+// 0 <= h, s, l <= 1
 var hslToHex = function (h, s, l) {
     var _a = hslToRgb(h, s, l).map(function (x) { return Math.floor(x); }), r = _a[0], g = _a[1], b = _a[2];
     return rgbToHex(r, g, b);
 };
-var getColor = function (featIn) {
-    return featIn === "0" ? "#38A800"
-        : hslToHex(Math.random(), (0.75 * Math.random()) + 0.25, (0.25 * Math.random()) + 0.4);
-};
 // via https://gis.stackexchange.com/questions/243136/geojson-add-and-format-line-features-to-a-leaflet-map
-var styleLines = function (featureLayer) {
-    // console.log(getColor(featureLayer));
-    return { color: getColor(featureLayer.properties.rt_symbol),
-        lineJoin: "round",
-        opacity: (0.2 * Math.random()) + 0.8,
-        weight: 10
-    };
-};
-var getResp = function (response) { return response.json(); };
-var getData = function (mapVar) { return function (data) {
-    var mapData = L.geoJson(data, { style: styleLines });
-    mapData.addTo(mapVar);
-    mapVar.fitBounds(mapData.getBounds());
-    console.log(data);
-    console.log(mapData);
-}; };
 var loadData = function (mapVar, url) {
+    var getResp = function (response) { return response.json(); };
+    var getColor = function (featIn) {
+        return featIn === "0" ? "#38A800"
+            : hslToHex(Math.random(), (0.75 * Math.random()) + 0.25, (0.25 * Math.random()) + 0.4);
+    };
+    var styleLines = function (featureLayer) {
+        // console.log(getColor(featureLayer));
+        return { color: getColor(featureLayer.properties.rt_symbol),
+            lineJoin: "round",
+            opacity: (0.2 * Math.random()) + 0.8,
+            weight: 10
+        };
+    };
+    var getData = function (aMapVar) { return function (data) {
+        var mapData = L.geoJson(data, { style: styleLines });
+        mapData.addTo(aMapVar);
+        aMapVar.fitBounds(mapData.getBounds());
+        console.log(data);
+        console.log(mapData);
+    }; };
     fetch(url)
         .then(getResp)
         .then(getData(mapVar));
