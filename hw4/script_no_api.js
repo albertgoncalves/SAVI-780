@@ -32,15 +32,6 @@ var assignButton = function (buttonId, f) {
     document.querySelector(buttonId)
         .addEventListener("click", f);
 };
-var loadButton = function () {
-    assignInput("input", buttonHtml("Go for it."));
-    assignButton("button", buttonActions);
-};
-var buttonActions = function () {
-    loadData(map, data);
-    assignInput("input", buttonHtml("Keeping going!"));
-    assignButton("button", function () { return loadData(map, data); });
-};
 var tileOpt = { maxZoom: 18,
     opacity: 0.25
 };
@@ -60,4 +51,11 @@ var mapOpt = { doubleClickZoom: false,
 // MAIN
 var map = L.map("map", mapOpt).setView(origin, 8);
 L.tileLayer(tileUrl, tileOpt).addTo(map);
-setTimeout(loadButton, 1500);
+setTimeout(function () {
+    assignInput("input", buttonHtml("Go for it."));
+    assignButton("button", function () {
+        assignInput("input", buttonHtml("Keeping going!"));
+        loadData(map, data);
+        assignButton("button", function () { return loadData(map, data); });
+    });
+}, 1500);

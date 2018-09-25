@@ -51,17 +51,6 @@ const assignButton = (buttonId: string, f) => {
             .addEventListener("click", f);
 };
 
-const loadButton = () => {
-    assignInput("input", buttonHtml("Go for it."));
-    assignButton("button", buttonActions);
-};
-
-const buttonActions = () => {
-    loadData(map, data);
-    assignInput("input", buttonHtml("Keeping going!"));
-    assignButton("button", () => loadData(map, data));
-};
-
 interface TileOpts { maxZoom: number;
                      opacity: number;
                    }
@@ -97,4 +86,15 @@ const mapOpt : MapOpts  = { doubleClickZoom: false
 
 const map = L.map("map", mapOpt).setView(origin, 8);
 L.tileLayer(tileUrl, tileOpt).addTo(map);
-setTimeout(loadButton, 1500);
+setTimeout(
+    () => {
+        assignInput("input", buttonHtml("Go for it."));
+        assignButton(
+            "button", () => {
+                assignInput("input", buttonHtml("Keeping going!"));
+                loadData(map, data);
+                assignButton("button", () => loadData(map, data));
+            }
+        );
+    }, 1500
+);
