@@ -88,13 +88,17 @@ const map = L.map("map", mapOpt).setView(origin, 8);
 L.tileLayer(tileUrl, tileOpt).addTo(map);
 setTimeout(
     () => {
+        const mapButton = () => {
+            assignButton("button", () => loadData(map, data));
+        };
+
         assignInput("input", buttonHtml("Go for it."));
+        mapButton();
         assignButton(
             "button", () => {
                 assignInput("input", buttonHtml("Keeping going!"));
-                loadData(map, data);
-                assignButton("button", () => loadData(map, data));
+                mapButton();
             }
         );
-    }, 1500
+    }, 500
 );

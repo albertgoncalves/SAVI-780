@@ -52,10 +52,13 @@ var mapOpt = { doubleClickZoom: false,
 var map = L.map("map", mapOpt).setView(origin, 8);
 L.tileLayer(tileUrl, tileOpt).addTo(map);
 setTimeout(function () {
+    var mapButton = function () {
+        assignButton("button", function () { return loadData(map, data); });
+    };
     assignInput("input", buttonHtml("Go for it."));
+    mapButton();
     assignButton("button", function () {
         assignInput("input", buttonHtml("Keeping going!"));
-        loadData(map, data);
-        assignButton("button", function () { return loadData(map, data); });
+        mapButton();
     });
-}, 1500);
+}, 500);
