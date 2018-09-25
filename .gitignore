@@ -4,3 +4,4 @@ example2
 assets
 hw*
 !hw4
+*.geojson

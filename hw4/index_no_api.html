@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>HW4</title>
+        <title>hw4</title>
         <meta name="viewport" content="initial-scale=1.0">
         <meta charset="utf-8">
 
@@ -10,24 +10,16 @@
     </head>
     <body>
         <div id="map"></div>
-        <!-- <div class="overlay">
-            <button class="load-data-brooklyn">
-                Brooklyn
-            </button>
-            <button class="load-data-queens">
-                Queens
-            </button>
-        </div> -->
-
+        <div class="outer box">
+            <p id="input">Wait for it...</p>
+        </div>
         <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
-
         <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js">
         </script>
-
         <script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@2.0.4/fetch.js">
         </script>
-
+        <script src="./data.geojson"></script>
         <script src="./colorfuns.js"></script>
-        <script src="./script.js"></script>
+        <script src="./script_no_api.js"></script>
     </body>
 </html>
