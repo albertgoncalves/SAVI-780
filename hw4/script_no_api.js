@@ -17,8 +17,8 @@ var loadData = function (mapVar, aData) {
         var mapData = L.geoJson(bData, { style: styleLines });
         mapData.addTo(aMapVar);
         aMapVar.fitBounds(mapData.getBounds());
-        console.log(bData);
-        console.log(mapData);
+        // console.log(bData);
+        // console.log(mapData);
     }; };
     getData(mapVar)(aData);
 };

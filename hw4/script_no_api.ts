@@ -31,8 +31,8 @@ const loadData = (mapVar, aData) => {
                                  );
         mapData.addTo(aMapVar);
         aMapVar.fitBounds(mapData.getBounds());
-        console.log(bData);
-        console.log(mapData);
+        // console.log(bData);
+        // console.log(mapData);
     };
 
     getData(mapVar)(aData);
