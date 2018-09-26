@@ -33,7 +33,7 @@ var assignButton = function (buttonId, f) {
         .addEventListener("click", f);
 };
 var tileOpt = { maxZoom: 18,
-    opacity: 0.25
+    opacity: 0.5
 };
 var tileUrl = ("https://stamen-tiles.a.ssl.fastly.net/toner/"
     + "{z}/{x}/{y}.png");

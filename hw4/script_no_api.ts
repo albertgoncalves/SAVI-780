@@ -65,7 +65,7 @@ interface MapOpts  { doubleClickZoom: boolean;
                    }
 
 const tileOpt: TileOpts = { maxZoom: 18
-                          , opacity: 0.25
+                          , opacity: 0.5
                           };
 const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
                           + "{z}/{x}/{y}.png"
