@@ -10,30 +10,52 @@ const onMapClick = (map) => (e) => {
 		 .openOn(map);
 };
 
+const stylePopup = (title) => {
+    const context  = { name        : ( "Private Room for two w/ Easy commute"
+                                     + "to City"
+                                     )
+                     , id          : 20286700
+                     , room_type   : "Private room"
+                     , neighborhood: "Elmhurst"
+                     , city        : "Elmhurst"
+                     , state       : "NY"
+                     , title       : title
+                     };
+    return context;
+};
+
 const origin  = [-37.82, 175.22];
-const map     = L.map('map').setView(origin, 13);
-const tileUrl = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
-const dataUrl = ( 'https://cdn.glitch.com'
-                + '/baade5a3-f979-48f2-9a28-14daee16fab0%2Fmap'
-                + '.geojson?1535912286843'
+const map     = L.map("map").setView(origin, 16);
+const tileUrl = "http://{s}.tile.osm.org/{z}/{x}/{y}.png";
+const dataUrl = ( "https://cdn.glitch.com"
+                + "/baade5a3-f979-48f2-9a28-14daee16fab0%2Fmap"
+                + ".geojson?1535912286843"
                 );
 
 L.tileLayer(tileUrl).addTo(map);
 L.Control.geocoder().addTo(map);
 
-let markers = L.markerClusterGroup();
+// MAIN
 
-for (let i = 0; i < addressPoints.length; i++) {
-	let a      = addressPoints[i];
-	let title  = a[2];
-	let marker = L.marker( new L.LatLng(a[0], a[1])
-                         , {title: title}
-                         );
-	marker.bindPopup(title);
+const template = document.querySelector(".listing-template").innerHTML;
+const markers  = L.markerClusterGroup();
+
+for (const i in addressPoints) {
+	const a      = addressPoints[i];
+	const title  = a[2];
+	const marker = L.marker( new L.LatLng(a[0], a[1])
+                           // , {title: title}
+                           );
+
+    const filledTemplate = Mustache.render(template, stylePopup(title));
+
+    // console.log(title);
+    // console.log(filledTemplate);
+    // document.querySelector(".filled-template-area").innerHTML = filledTemplate;
+
+    marker.bindPopup(filledTemplate);
 	markers.addLayer(marker);
 }
 
-// MAIN
-
 map.addLayer(markers);
-map.on('click', onMapClick(map));
+map.on("click", onMapClick(map));
