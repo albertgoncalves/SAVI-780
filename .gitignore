@@ -7,3 +7,4 @@ hw*
 !hw4
 *.geojson
 *.txt
+tmp

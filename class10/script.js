@@ -27,10 +27,6 @@ const stylePopup = (title) => {
 const origin  = [-37.82, 175.22];
 const map     = L.map("map").setView(origin, 16);
 const tileUrl = "http://{s}.tile.osm.org/{z}/{x}/{y}.png";
-const dataUrl = ( "https://cdn.glitch.com"
-                + "/baade5a3-f979-48f2-9a28-14daee16fab0%2Fmap"
-                + ".geojson?1535912286843"
-                );
 
 L.tileLayer(tileUrl).addTo(map);
 L.Control.geocoder().addTo(map);
