@@ -8,3 +8,4 @@ hw*
 *.geojson
 *.txt
 tmp
+__pycache__
