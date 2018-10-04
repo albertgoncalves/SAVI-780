@@ -36,15 +36,21 @@ if __name__ == '__main__':
     lines, sttns = prepare_data()
     sttns        = concat_lines(sttns)
 
-    selection = ['R', '4']  # reveals problem in grouping! need to solve...
+    # selection = ['7', 'R']
+    selection = ['4', 'R']  # reveals problem in grouping! need to solve...
 
     my_lines, my_sttns = select_2_lines(lines, sttns, selection)
+
+    print(my_sttns['line'])
+    print(my_sttns['name'])
 
     fig, ax = plt.subplots(figsize=(5, 6.5))
     kwargs  = {'column': 'name', 'alpha': 0.25, 'ax': ax}
 
     my_lines.plot(**kwargs)
     my_sttns.plot(**kwargs)
+
+    ax.set_aspect('equal')
 
     plt.tight_layout()
     plt.show()

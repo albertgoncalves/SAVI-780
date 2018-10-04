@@ -50,7 +50,9 @@ if __name__ == '__main__':
 
         my_lines.plot(**kwargs)
         my_sttns.plot(**kwargs)
+
         ax.set_title(stop)
+        ax.set_aspect('equal')
 
         plt.tight_layout()
         plt.savefig('tmp/{}.png'.format(stop))
