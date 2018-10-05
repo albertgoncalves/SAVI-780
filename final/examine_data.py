@@ -51,7 +51,6 @@ def list_stops():
 
 if __name__ == '__main__':
     lines, sttns = prepare_data()
-
     kwargs = {'column': 'name', 'alpha': 0.25}
 
     for stop in map(add_dash, list_stops()):
