@@ -22,9 +22,10 @@ def select_line(lines, sttns, line_char):
 
 def prepare_data():
     lines = gpd.read_file(subway_filename('lines'))
-    sttns = gpd.read_file(subway_filename('stations'))
+    sttns = gpd.read_file(subway_filename('entrances'))
 
     sttns['line'] = sttns['line'].str.replace(' Express', '')
+    sttns['name'] = sttns['name'].astype(str)
 
     return lines, sttns
 
@@ -49,7 +50,8 @@ if __name__ == '__main__':
         kwargs['ax'] = ax
 
         my_lines.plot(**kwargs)
-        my_sttns.plot(**kwargs)
+        if len(my_sttns) > 0:
+            my_sttns.plot(**kwargs)
 
         ax.set_title(stop)
         ax.set_aspect('equal')
