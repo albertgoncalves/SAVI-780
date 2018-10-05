@@ -29,6 +29,7 @@ def select_2_lines(lines, sttns, selection):
 
 if __name__ == '__main__':
     lines, sttns = prepare_data()
+    kwargs = {'column': 'name', 'alpha': 0.25}
 
     selections = [ ['R', 'N', 'D']
                  , ['6', 'M', 'E']
@@ -44,12 +45,12 @@ if __name__ == '__main__':
         my_lines, my_sttns = select_2_lines(lines, sttns, selection)
 
         fig, ax = plt.subplots(figsize=(5, 6.5))
-        kwargs  = {'alpha': 0.25, 'ax': ax}
+        kwargs['ax'] = ax
 
-        my_lines.plot(column='name', **kwargs)
+        my_lines.plot(**kwargs)
 
         if len(my_sttns) > 0:
-            my_sttns.plot(column='name', **kwargs)
+            my_sttns.plot(**kwargs)
 
         ax.set_title(title)
         ax.set_aspect('equal')
