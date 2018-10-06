@@ -57,8 +57,8 @@ const search = (featureArray: Row[], searchTerm: string): Row[] => {
 };
 
 const sttnsG   = search(sttns.features, "G");
-const sttnsGR  = search(sttnsG        , "R"); // further reduce
-const sttnsGRF = search(sttnsGR       , "F"); // selected stops
+const sttnsGR  = search(sttnsG        , "R");
+const sttnsGRF = search(sttnsGR       , "F");
 
 //
 // line search pattern

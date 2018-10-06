@@ -33,8 +33,8 @@ var search = function (featureArray, searchTerm) {
     return featureArray.filter(checkField(searchTerm, "line"));
 };
 var sttnsG = search(sttns.features, "G");
-var sttnsGR = search(sttnsG, "R"); // further reduce
-var sttnsGRF = search(sttnsGR, "F"); // selected stops
+var sttnsGR = search(sttnsG, "R");
+var sttnsGRF = search(sttnsGR, "F");
 //
 // line search pattern
 //
