@@ -10,10 +10,10 @@ body {
 }
 
 .overlay {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 15px;
-  background: white;
-  z-index: 10000;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 15px;
+    background: white;
+    z-index: 10000;
 }
