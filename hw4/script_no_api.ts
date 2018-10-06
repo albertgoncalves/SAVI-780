@@ -1,4 +1,4 @@
-// $ tslint script_no_api.ts ; tsc script_no_api.ts
+// $ tslint script_no_api.ts; tsc script_no_api.ts;
 
 declare var data    : any;
 declare var L       : any;

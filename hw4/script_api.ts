@@ -1,4 +1,4 @@
-// $ tslint script_api.ts ; tsc script_api.ts
+// $ tslint script_api.ts; tsc script_api.ts;
 
 declare var L       : any;
 declare var hslToHex: any;

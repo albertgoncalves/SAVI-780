@@ -1,4 +1,4 @@
-// $ tslint script.ts ; tsc script.ts
+// $ tslint script.ts; tsc script.ts;
 // via https://gis.stackexchange.com/questions/243136/geojson-add-and-format-line-features-to-a-leaflet-map
 var loadData = function (mapVar, url) {
     var getResp = function (response) { return response.json(); };

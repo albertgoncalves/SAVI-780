@@ -1,7 +1,4 @@
-// tslint script.ts ; tsc script.ts
-
-/* global lines */
-/* global sttns */
+// tslint script.ts; tsc script.ts;
 
 declare var L     : any;
 declare var lines : any;
@@ -88,7 +85,6 @@ const linesF = splitSearch(linesR.drop   , "name")("F"); // on the map!
 const loadData = (mapVar, mapLayer = null) => (dataVar) => {
     const _ = mapLayer !== null === true ? mapLayer.clearLayers()
                                          : null;
-
     const mapData = L.geoJson(dataVar);
     mapLayer = mapData.addTo(mapVar);
     map.fitBounds(mapData.getBounds());
@@ -102,13 +98,11 @@ const loadData = (mapVar, mapLayer = null) => (dataVar) => {
 const map = L.map("map", mapOpt).setView(origin, 10);
 L.tileLayer(tileUrl).addTo(map);
 
-let pointsLayer = null; // initialize points layers ...
-                        // points need to be cleared after each reduction
-
+let pointsLayer = null; // initialize points layer ...
+                        // points need to be cleared after each selection
 pointsLayer = loadData(map, pointsLayer)(sttnsG);
-loadData(map)(linesG.take); // mapLayer variable can be ignored ...
-                            // lines, via search pattern, will never overlap
-
+loadData(map)(linesG.take); // mapLayer variable can be ignored for lines ...
+                            // lines search pattern will never duplicate
 setTimeout(
     () => {
         pointsLayer = loadData(map, pointsLayer)(sttnsGRF);

@@ -12,10 +12,9 @@ cd ~/Documents/SAVI-780/final/
 python export_geojson.py
 
 # prepend .geojsons with JS assignment operators
-for x in lines sttns
-    do {
-            echo -n "var ${x} = " ;
-            cat data/subway_${x}_reduction.geojson ;
-    } > "subway_${x}_js.geojson" ;
-    echo ";" >> "subway_${x}_js.geojson" ;
-    done
+for x in lines sttns; do
+    { echo -n "var ${x} = ";
+      cat data/subway_${x}_reduction.geojson;
+    } > "subway_${x}_js.geojson";
+    echo ";" >> "subway_${x}_js.geojson";
+done

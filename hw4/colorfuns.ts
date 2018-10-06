@@ -1,4 +1,4 @@
-// $ tslint colorfuns.ts ; tsc colorfuns.ts
+// $ tslint colorfuns.ts; tsc colorfuns.ts;
 
 // via https://gist.github.com/mjackson/5311256
 

@@ -1,4 +1,4 @@
-// $ tslint script_no_api.ts ; tsc script_no_api.ts
+// $ tslint script_no_api.ts; tsc script_no_api.ts;
 // via https://gis.stackexchange.com/questions/243136/geojson-add-and-format-line-features-to-a-leaflet-map
 var loadData = function (mapVar, aData) {
     var getColor = function (featIn) {

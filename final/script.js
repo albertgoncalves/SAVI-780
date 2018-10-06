@@ -1,4 +1,4 @@
-// tslint script.ts ; tsc script.ts
+// tslint script.ts; tsc script.ts;
 var tileUrl = ("https://stamen-tiles.a.ssl.fastly.net/toner/"
     + "{z}/{x}/{y}.png");
 var origin = [40.7128,
@@ -75,11 +75,11 @@ var loadData = function (mapVar, mapLayer) {
 //
 var map = L.map("map", mapOpt).setView(origin, 10);
 L.tileLayer(tileUrl).addTo(map);
-var pointsLayer = null; // initialize points layers ...
-// points need to be cleared after each reduction
+var pointsLayer = null; // initialize points layer ...
+// points need to be cleared after each selection
 pointsLayer = loadData(map, pointsLayer)(sttnsG);
-loadData(map)(linesG.take); // mapLayer variable can be ignored ...
-// lines, via search pattern, will never overlap
+loadData(map)(linesG.take); // mapLayer variable can be ignored for lines ...
+// lines search pattern will never duplicate
 setTimeout(function () {
     pointsLayer = loadData(map, pointsLayer)(sttnsGRF);
     loadData(map)(linesR.take);
