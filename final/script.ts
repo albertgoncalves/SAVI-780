@@ -23,6 +23,21 @@ interface MapOpts { doubleClickZoom: boolean;
                     zoomControl    : boolean;
                   }
 
+const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
+                          + "{z}/{x}/{y}.png"
+                          );
+const origin : number[] = [  40.7128
+                          , -74.0060
+                          ];
+const mapOpt : MapOpts  = { doubleClickZoom: false
+                          , dragging       : false
+                          , keyboard       : false
+                          , scrollWheelZoom: false
+                          , tap            : false
+                          , touchZoom      : false
+                          , zoomControl    : false
+                          };
+
 //
 // shared utility functions
 //
@@ -68,7 +83,7 @@ const linesR = splitSearch(linesG.drop   , "name")("R"); // they are already
 const linesF = splitSearch(linesR.drop   , "name")("F"); // on the map!
 
 //
-// test map
+// geojson loader
 //
 const loadData = (mapVar, mapLayer = null) => (dataVar) => {
     const _ = mapLayer !== null === true ? mapLayer.clearLayers()
@@ -81,21 +96,9 @@ const loadData = (mapVar, mapLayer = null) => (dataVar) => {
     return mapLayer;
 };
 
-const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
-                          + "{z}/{x}/{y}.png"
-                          );
-const origin : number[] = [  40.7128
-                          , -74.0060
-                          ];
-const mapOpt : MapOpts  = { doubleClickZoom: false
-                          , dragging       : false
-                          , keyboard       : false
-                          , scrollWheelZoom: false
-                          , tap            : false
-                          , touchZoom      : false
-                          , zoomControl    : false
-                          };
-
+//
+// main
+//
 const map = L.map("map", mapOpt).setView(origin, 10);
 L.tileLayer(tileUrl).addTo(map);
 
@@ -103,13 +106,13 @@ let pointsLayer = null; // initialize points layers ...
                         // points need to be cleared after each reduction
 
 pointsLayer = loadData(map, pointsLayer)(sttnsG);
-loadData(map)(linesG.take);
-loadData(map)(linesR.take); // mapLayer variable can be ignored ...
+loadData(map)(linesG.take); // mapLayer variable can be ignored ...
                             // lines, via search pattern, will never overlap
 
 setTimeout(
     () => {
         pointsLayer = loadData(map, pointsLayer)(sttnsGRF);
+        loadData(map)(linesR.take);
         loadData(map)(linesF.take);
     }, 3000
 );

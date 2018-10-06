@@ -1,4 +1,17 @@
 // tslint script.ts ; tsc script.ts
+var tileUrl = ("https://stamen-tiles.a.ssl.fastly.net/toner/"
+    + "{z}/{x}/{y}.png");
+var origin = [40.7128,
+    -74.0060
+];
+var mapOpt = { doubleClickZoom: false,
+    dragging: false,
+    keyboard: false,
+    scrollWheelZoom: false,
+    tap: false,
+    touchZoom: false,
+    zoomControl: false
+};
 //
 // shared utility functions
 //
@@ -44,7 +57,7 @@ var linesG = splitSearch(lines.features, "name")("G"); // matched rows since
 var linesR = splitSearch(linesG.drop, "name")("R"); // they are already
 var linesF = splitSearch(linesR.drop, "name")("F"); // on the map!
 //
-// test map
+// geojson loader
 //
 var loadData = function (mapVar, mapLayer) {
     if (mapLayer === void 0) { mapLayer = null; }
@@ -57,28 +70,18 @@ var loadData = function (mapVar, mapLayer) {
         return mapLayer;
     };
 };
-var tileUrl = ("https://stamen-tiles.a.ssl.fastly.net/toner/"
-    + "{z}/{x}/{y}.png");
-var origin = [40.7128,
-    -74.0060
-];
-var mapOpt = { doubleClickZoom: false,
-    dragging: false,
-    keyboard: false,
-    scrollWheelZoom: false,
-    tap: false,
-    touchZoom: false,
-    zoomControl: false
-};
+//
+// main
+//
 var map = L.map("map", mapOpt).setView(origin, 10);
 L.tileLayer(tileUrl).addTo(map);
 var pointsLayer = null; // initialize points layers ...
 // points need to be cleared after each reduction
 pointsLayer = loadData(map, pointsLayer)(sttnsG);
-loadData(map)(linesG.take);
-loadData(map)(linesR.take); // mapLayer variable can be ignored ...
+loadData(map)(linesG.take); // mapLayer variable can be ignored ...
 // lines, via search pattern, will never overlap
 setTimeout(function () {
     pointsLayer = loadData(map, pointsLayer)(sttnsGRF);
+    loadData(map)(linesR.take);
     loadData(map)(linesF.take);
 }, 3000);
