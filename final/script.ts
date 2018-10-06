@@ -52,37 +52,35 @@ const checkField = (searchTerm: string, field: string) =>
 //
 // station search pattern
 //
-const search = (featureArray: Row[], field: string) =>
-               (searchTerm: string): Row[] => {
-    return featureArray.filter(checkField(searchTerm, field));
+const search = (featureArray: Row[], searchTerm: string): Row[] => {
+    return featureArray.filter(checkField(searchTerm, "line"));
 };
 
-const sttnsG   = search(sttns.features, "line")("G");
-const sttnsGR  = search(sttnsG        , "line")("R"); // further reduce
-const sttnsGRF = search(sttnsGR       , "line")("F"); // selected stops
+const sttnsG   = search(sttns.features, "G");
+const sttnsGR  = search(sttnsG        , "R"); // further reduce
+const sttnsGRF = search(sttnsGR       , "F"); // selected stops
 
 //
 // line search pattern
 //
-const splitSearch = (featureArray: Row[], field: string) =>
-                    (searchTerm: string): Splits => {
+const splitSearch = (featureArray: Row[], searchTerm: string): Splits => {
     const take = [] as Row[];
     const drop = [] as Row[];
     for (const row of featureArray) {
-        checkField(searchTerm, field)(row) ? take.push(row)
-                                           : drop.push(row);
+        checkField(searchTerm, "name")(row) ? take.push(row)
+                                            : drop.push(row);
     }
     return {take, drop};
 };
-                                                         // no need to search
-const linesG = splitSearch(lines.features, "name")("G"); // matched rows since
-const linesR = splitSearch(linesG.drop   , "name")("R"); // they are already
-const linesF = splitSearch(linesR.drop   , "name")("F"); // on the map!
+                                                 // no need to search
+const linesG = splitSearch(lines.features, "G"); // matched rows since
+const linesR = splitSearch(linesG.drop   , "R"); // they are already
+const linesF = splitSearch(linesR.drop   , "F"); // on the map!
 
 //
 // geojson loader
 //
-const loadData = (mapVar, mapLayer = null) => (dataVar) => {
+const loadData = (mapVar, dataVar, mapLayer = null) => {
     const _ = mapLayer !== null === true ? mapLayer.clearLayers()
                                          : null;
     const mapData = L.geoJson(dataVar);
@@ -100,13 +98,13 @@ L.tileLayer(tileUrl).addTo(map);
 
 let pointsLayer = null; // initialize points layer ...
                         // points need to be cleared after each selection
-pointsLayer = loadData(map, pointsLayer)(sttnsG);
-loadData(map)(linesG.take); // mapLayer variable can be ignored for lines ...
+pointsLayer = loadData(map, sttnsG, pointsLayer);
+loadData(map, linesG.take); // mapLayer variable can be ignored for lines ...
                             // lines search pattern will never duplicate
 setTimeout(
     () => {
-        pointsLayer = loadData(map, pointsLayer)(sttnsGRF);
-        loadData(map)(linesR.take);
-        loadData(map)(linesF.take);
+        pointsLayer = loadData(map, sttnsGRF, pointsLayer);
+        loadData(map, linesR.take);
+        loadData(map, linesF.take);
     }, 3000
 );

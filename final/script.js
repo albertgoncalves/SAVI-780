@@ -29,46 +29,40 @@ var checkField = function (searchTerm, field) {
 //
 // station search pattern
 //
-var search = function (featureArray, field) {
-    return function (searchTerm) {
-        return featureArray.filter(checkField(searchTerm, field));
-    };
+var search = function (featureArray, searchTerm) {
+    return featureArray.filter(checkField(searchTerm, "line"));
 };
-var sttnsG = search(sttns.features, "line")("G");
-var sttnsGR = search(sttnsG, "line")("R"); // further reduce
-var sttnsGRF = search(sttnsGR, "line")("F"); // selected stops
+var sttnsG = search(sttns.features, "G");
+var sttnsGR = search(sttnsG, "R"); // further reduce
+var sttnsGRF = search(sttnsGR, "F"); // selected stops
 //
 // line search pattern
 //
-var splitSearch = function (featureArray, field) {
-    return function (searchTerm) {
-        var take = [];
-        var drop = [];
-        for (var _i = 0, featureArray_1 = featureArray; _i < featureArray_1.length; _i++) {
-            var row = featureArray_1[_i];
-            checkField(searchTerm, field)(row) ? take.push(row)
-                : drop.push(row);
-        }
-        return { take: take, drop: drop };
-    };
+var splitSearch = function (featureArray, searchTerm) {
+    var take = [];
+    var drop = [];
+    for (var _i = 0, featureArray_1 = featureArray; _i < featureArray_1.length; _i++) {
+        var row = featureArray_1[_i];
+        checkField(searchTerm, "name")(row) ? take.push(row)
+            : drop.push(row);
+    }
+    return { take: take, drop: drop };
 };
 // no need to search
-var linesG = splitSearch(lines.features, "name")("G"); // matched rows since
-var linesR = splitSearch(linesG.drop, "name")("R"); // they are already
-var linesF = splitSearch(linesR.drop, "name")("F"); // on the map!
+var linesG = splitSearch(lines.features, "G"); // matched rows since
+var linesR = splitSearch(linesG.drop, "R"); // they are already
+var linesF = splitSearch(linesR.drop, "F"); // on the map!
 //
 // geojson loader
 //
-var loadData = function (mapVar, mapLayer) {
+var loadData = function (mapVar, dataVar, mapLayer) {
     if (mapLayer === void 0) { mapLayer = null; }
-    return function (dataVar) {
-        var _ = mapLayer !== null === true ? mapLayer.clearLayers()
-            : null;
-        var mapData = L.geoJson(dataVar);
-        mapLayer = mapData.addTo(mapVar);
-        map.fitBounds(mapData.getBounds());
-        return mapLayer;
-    };
+    var _ = mapLayer !== null === true ? mapLayer.clearLayers()
+        : null;
+    var mapData = L.geoJson(dataVar);
+    mapLayer = mapData.addTo(mapVar);
+    map.fitBounds(mapData.getBounds());
+    return mapLayer;
 };
 //
 // main
@@ -77,11 +71,11 @@ var map = L.map("map", mapOpt).setView(origin, 10);
 L.tileLayer(tileUrl).addTo(map);
 var pointsLayer = null; // initialize points layer ...
 // points need to be cleared after each selection
-pointsLayer = loadData(map, pointsLayer)(sttnsG);
-loadData(map)(linesG.take); // mapLayer variable can be ignored for lines ...
+pointsLayer = loadData(map, sttnsG, pointsLayer);
+loadData(map, linesG.take); // mapLayer variable can be ignored for lines ...
 // lines search pattern will never duplicate
 setTimeout(function () {
-    pointsLayer = loadData(map, pointsLayer)(sttnsGRF);
-    loadData(map)(linesR.take);
-    loadData(map)(linesF.take);
+    pointsLayer = loadData(map, sttnsGRF, pointsLayer);
+    loadData(map, linesR.take);
+    loadData(map, linesF.take);
 }, 3000);
