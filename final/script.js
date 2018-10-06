@@ -32,9 +32,6 @@ var checkField = function (searchTerm, field) {
 var search = function (featureArray, searchTerm) {
     return featureArray.filter(checkField(searchTerm, "line"));
 };
-var sttnsG = search(sttns.features, "G");
-var sttnsGR = search(sttnsG, "R");
-var sttnsGRF = search(sttnsGR, "F");
 //
 // line search pattern
 //
@@ -48,10 +45,6 @@ var splitSearch = function (featureArray, searchTerm) {
     }
     return { take: take, drop: drop };
 };
-// no need to search
-var linesG = splitSearch(lines.features, "G"); // matched rows since
-var linesR = splitSearch(linesG.drop, "R"); // they are already
-var linesF = splitSearch(linesR.drop, "F"); // on the map!
 //
 // geojson loader
 //
@@ -64,11 +57,27 @@ var loadData = function (mapVar, dataVar, mapLayer) {
     map.fitBounds(mapData.getBounds());
     return mapLayer;
 };
+var mapInput = function (mapVar, linesInput, sttnsInput, pointsLayerA, input) {
+    var linesOutput = splitSearch(linesInput.drop, input);
+    var sttnsOutput = search(sttnsInput, input);
+    loadData(mapVar, linesOutput.take);
+    var newLayer = loadData(mapVar, sttnsOutput, pointsLayerA);
+    return [linesOutput, sttnsOutput, newLayer];
+};
+var cloneObj = function (obj) { return JSON.parse(JSON.stringify(obj)); };
 //
 // main
 //
 var map = L.map("map", mapOpt).setView(origin, 10);
 L.tileLayer(tileUrl).addTo(map);
+var linesMap = cloneObj(lines.features);
+var sttnsMap = cloneObj(sttns.features);
+var sttnsG = search(sttns.features, "G");
+var sttnsGR = search(sttnsG, "R");
+var sttnsGRF = search(sttnsGR, "F");
+var linesG = splitSearch(lines.features, "G"); // matched rows since
+var linesR = splitSearch(linesG.drop, "R"); // they are already
+var linesF = splitSearch(linesR.drop, "F"); // on the map!
 var pointsLayer = null; // initialize points layer ...
 // points need to be cleared after each selection
 pointsLayer = loadData(map, sttnsG, pointsLayer);
