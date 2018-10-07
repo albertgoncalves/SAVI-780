@@ -13,11 +13,11 @@ def selector(gdf, line_col, line_char):
     return gdf.loc[gdf[line_col].str.contains(line_char)].copy()
 
 
-def select_line(lines, sttns, line_char):
-    my_lines = selector(lines, 'name', line_char)
-    my_sttns = selector(sttns, 'line', line_char)
+def select_line(lines, stations, line_char):
+    my_lines    = selector(lines   , 'name', line_char)
+    my_stations = selector(stations, 'line', line_char)
 
-    return my_lines, my_sttns
+    return my_lines, my_stations
 
 
 def add_dash(string):
@@ -25,21 +25,23 @@ def add_dash(string):
 
 
 def prepare_data():
-    lines = gpd.read_file(subway_filename('lines'))
-    sttns = gpd.read_file(subway_filename('entrances'))
+    lines    = gpd.read_file(subway_filename('lines'))
+    stations = gpd.read_file(subway_filename('entrances'))
 
-    lines['name'] = lines['name'].astype(str)
-    sttns['name'] = sttns['name'].astype(str)
-    sttns['line'] = sttns['line'].astype(str)
+    lines['name']    = lines['name'].astype(str)
 
-    lines['name'] = lines['name'].apply(add_dash)
-    sttns['line'] = sttns['line'].apply(add_dash)
-    lines['name'] = lines['name'].str.replace('-W-' , '-Q-')
-    sttns['line'] = sttns['line'].str.replace('-FS-', '-S-')
-    sttns['line'] = sttns['line'].str.replace('-GS-', '-S-')
-    sttns['line'] = sttns['line'].str.replace('-H-' , '-S-')
+    stations['name'] = stations['name'].astype(str)
+    stations['line'] = stations['line'].astype(str)
 
-    return lines, sttns
+    lines['name']    = lines['name'].apply(add_dash)
+    lines['name']    = lines['name'].str.replace('-W-' , '-Q-')
+
+    stations['line'] = stations['line'].apply(add_dash)
+    stations['line'] = stations['line'].str.replace('-FS-', '-S-')
+    stations['line'] = stations['line'].str.replace('-GS-', '-S-')
+    stations['line'] = stations['line'].str.replace('-H-' , '-S-')
+
+    return lines, stations
 
 
 def list_stops():
@@ -50,20 +52,20 @@ def list_stops():
 
 
 if __name__ == '__main__':
-    lines, sttns = prepare_data()
+    lines, stations = prepare_data()
     kwargs = {'column': 'name', 'alpha': 0.25}
 
     for stop in map(add_dash, list_stops()):
         title = stop.replace('-', '')
 
-        my_lines, my_sttns = select_line(lines, sttns, stop)
+        my_lines, my_stations = select_line(lines, stations, stop)
 
         fig, ax = plt.subplots(figsize=(5, 6.5))
         kwargs['ax'] = ax
 
         my_lines.plot(**kwargs)
-        if len(my_sttns) > 0:
-            my_sttns.plot(**kwargs)
+        if len(my_stations) > 0:
+            my_stations.plot(**kwargs)
 
         ax.set_title(title)
         ax.set_aspect('equal')

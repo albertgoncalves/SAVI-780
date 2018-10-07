@@ -11,10 +11,10 @@ def export_geojson(gdf, filename):
 
 
 if __name__ == '__main__':
-    lines, sttns = prepare_data()
+    lines, stations = prepare_data()
 
-    export_args = [ (lines[['name', 'geometry']], 'lines')
-                  , (sttns[['line', 'geometry']], 'sttns')
+    export_args = [ (lines   [['name', 'geometry']], 'lines'   )
+                  , (stations[['line', 'geometry']], 'stations')
                   ]
 
     for gdf, filename in export_args:

@@ -1,25 +1,17 @@
 // tslint script.ts; tsc script.ts;
-// interface MapOpts { doubleClickZoom: boolean;
-//                     dragging       : boolean;
-//                     keyboard       : boolean;
-//                     scrollWheelZoom: boolean;
-//                     tap            : boolean;
-//                     touchZoom      : boolean;
-//                     zoomControl    : boolean;
-//                   }
 var tileUrl = ("https://stamen-tiles.a.ssl.fastly.net/toner/"
     + "{z}/{x}/{y}.png");
 var origin = [40.7128,
     -74.0060
 ];
-// const mapOpt : MapOpts  = { doubleClickZoom: false
-//                           , dragging       : false
-//                           , keyboard       : false
-//                           , scrollWheelZoom: false
-//                           , tap            : false
-//                           , touchZoom      : false
-//                           , zoomControl    : false
-//                           };
+var mapOpt = { doubleClickZoom: false,
+    dragging: false,
+    keyboard: false,
+    scrollWheelZoom: false,
+    tap: false,
+    touchZoom: false,
+    zoomControl: false
+};
 //
 // shared utility functions
 //
@@ -36,6 +28,11 @@ var checkField = function (searchTerm, field) {
 };
 var cloneObj = function (obj) { return JSON.parse(JSON.stringify(obj)); };
 var initLines = function (linesObj) { return ({ take: [], drop: linesObj }); };
+var unique = function (myArray) {
+    return (myArray.filter(function (v, i, a) { return a.indexOf(v) === i; }));
+};
+var checkLength = function (myArray, f) { return myArray.length > 0 ? f(myArray)
+    : null; };
 //
 // station search pattern
 //
@@ -58,46 +55,42 @@ var splitSearch = function (featureArray, searchTerm) {
 //
 // geojson loader
 //
-var loadData = function (mapVar, dataVar) {
+var loadData = function (mapVar) { return function (dataVar) {
     var mapData = L.geoJson(dataVar);
     var newLayer = mapData.addTo(mapVar);
-    map.fitBounds(mapData.getBounds());
+    // map.fitBounds(mapData.getBounds());
     return newLayer;
+}; };
+var checkOutput = function (_a) {
+    var rows = _a[0], column = _a[1];
+    console.log(unique(rows.map(function (row) { return row.properties[column]; })));
+    console.log(rows.length);
 };
-var unique = function (myArray) { return myArray.filter(function (v, i, a) { return a.indexOf(v) === i; }); };
-var mapInput = function (mapVar, linesInput, sttnsInput, layerInput, keyInput) {
-    var _; // trash collector
+var mapInput = function (mapVar, linesInput, stationsInput, layerInput, keyInput) {
     var linesOutput = splitSearch(linesInput.drop, keyInput);
-    var sttnsOutput = search(sttnsInput, keyInput);
-    // clear existing points
+    var stationsOutput = search(stationsInput, keyInput);
     _ = layerInput !== null ? layerInput.clearLayers()
         : null;
-    // load new points, return layer
-    var newLayer = sttnsOutput.length > 0 ? loadData(mapVar, sttnsOutput)
-        : null;
-    // load new lines, layer not needed
-    _ = linesOutput.take.length > 0 ? loadData(mapVar, linesOutput.take)
-        : null;
-    // check output
-    [{ rows: linesOutput.take, column: "name" },
-        { rows: sttnsOutput, column: "line" }
-    ].forEach(function (obj) {
-        console.log(unique(obj.rows.map(function (row) { return row.properties[obj.column]; })));
-        console.log(obj.rows.length);
-    });
-    return [linesOutput, sttnsOutput, newLayer];
+    var newLayer = checkLength(stationsOutput, loadData(mapVar));
+    _ = checkLength(linesOutput.take, loadData(mapVar));
+    [[linesOutput.take, "name"],
+        [stationsOutput, "line"]
+    ].forEach(checkOutput);
+    return [linesOutput, stationsOutput, newLayer];
 };
 //
 // main
 //
-// const map = L.map("map", mapOpt).setView(origin, 10);
-var map = L.map("map").setView(origin, 10);
+// const map = L.map("map", mapOpt).setView(origin, 12);
+var map = L.map("map").setView(origin, 12);
 L.tileLayer(tileUrl).addTo(map);
-var linesMap = cloneObj(initLines(lines.features));
-var sttnsMap = cloneObj(sttns.features);
-var sttnsLayer = null;
+lines = cloneObj(initLines(lines.features));
+stations = cloneObj(stations.features);
+var _;
+var stationsLayer = null;
 var runSelection = function (selection) {
     var _a;
-    _a = mapInput(map, linesMap, sttnsMap, sttnsLayer, selection), linesMap = _a[0], sttnsMap = _a[1], sttnsLayer = _a[2];
+    _a = mapInput(map, lines, stations, stationsLayer, selection), lines = _a[0], stations = _a[1], stationsLayer = _a[2];
 };
 ["G", "R", "F"].forEach(runSelection);
+// location.reload();

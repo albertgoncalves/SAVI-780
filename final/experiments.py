@@ -9,7 +9,7 @@ from examine_data import prepare_data
 from examine_data import selector
 
 
-def select_2_lines(lines, sttns, selection):
+def select_2_lines(lines, stations, selection):
 
     def map_selection():
         return map(add_dash, selection)
@@ -19,16 +19,17 @@ def select_2_lines(lines, sttns, selection):
                          ]
                         ).copy()
 
-    my_sttns = sttns.copy()
+    my_stations = stations.copy()
 
     for selected in map_selection():
-        my_sttns = my_sttns.loc[sttns['line'].str.contains(selected)].copy()
+        my_stations = \
+            my_stations.loc[stations['line'].str.contains(selected)].copy()
 
-    return my_lines, my_sttns
+    return my_lines, my_stations
 
 
 if __name__ == '__main__':
-    lines, sttns = prepare_data()
+    lines, stations = prepare_data()
     kwargs = {'column': 'name', 'alpha': 0.25}
 
     selections = [ ['R', 'N', 'D']
@@ -42,15 +43,15 @@ if __name__ == '__main__':
     for selection in selections:
         title = '-'.join(sorted(selection))
 
-        my_lines, my_sttns = select_2_lines(lines, sttns, selection)
+        my_lines, my_stations = select_2_lines(lines, stations, selection)
 
         fig, ax = plt.subplots(figsize=(5, 6.5))
         kwargs['ax'] = ax
 
         my_lines.plot(**kwargs)
 
-        if len(my_sttns) > 0:
-            my_sttns.plot(**kwargs)
+        if len(my_stations) > 0:
+            my_stations.plot(**kwargs)
 
         ax.set_title(title)
         ax.set_aspect('equal')
