@@ -1,9 +1,10 @@
 // tslint script.ts; tsc script.ts;
 
-declare var L       : any;
-declare var lines   : any;
-declare var stations: any;
-// declare var location: Location;
+declare var keyInputs: any;
+declare var L        : any;
+declare var lines    : any;
+// declare var location : Location;
+declare var stations : any;
 
 interface Row     { properties: any; // not much type safety here...
                   }
@@ -26,6 +27,18 @@ const origin : number[] = [  40.7128
 //                           , touchZoom      : false
 //                           , zoomControl    : false
 //                           };
+
+const allStops = [ "1", "2", "3", "4", "5", "6", "7"
+                 , "A", "B", "C", "D", "E", "F", "G"
+                 , "J", "L", "M", "N", "Q", "R", "S"
+                 ];
+
+const keysToStops = allStops.reduce(
+    (obj, stop) => {
+        obj[keyInputs[stop.toLowerCase()]] = stop;
+        return obj;
+    }, {}
+);
 
 //
 // shared utility functions
@@ -111,7 +124,7 @@ stations = stations.features;
 
 let stationsLayer = null;
 
-const runSelection = (selection) => {
+const selectStop = (selection) => {
     [lines, stations, stationsLayer] = mapInput( map
                                                , lines
                                                , stations
@@ -120,5 +133,18 @@ const runSelection = (selection) => {
                                                );
 };
 
-["G", "R", "F"].forEach(runSelection);
+const checkKey = (keyStroke) => {
+    return contains(Object.keys(keysToStops).join(", "))(keyStroke.toString());
+};
+
+const refresh = () => location.reload();
+
+window.onkeydown = (e) => {
+    return e.keyCode ? checkKey(e.keyCode) ? selectStop(keysToStops[e.keyCode])
+                                           : e.keyCode === 27 ? refresh()
+                                                              : null
+                     : null;
+};
+
+// ["G", "R", "F"].forEach(selectStop);
 // location.reload();

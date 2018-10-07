@@ -12,6 +12,14 @@ var origin = [40.7128,
 //                           , touchZoom      : false
 //                           , zoomControl    : false
 //                           };
+var allStops = ["1", "2", "3", "4", "5", "6", "7",
+    "A", "B", "C", "D", "E", "F", "G",
+    "J", "L", "M", "N", "Q", "R", "S"
+];
+var keysToStops = allStops.reduce(function (obj, stop) {
+    obj[keyInputs[stop.toLowerCase()]] = stop;
+    return obj;
+}, {});
 //
 // shared utility functions
 //
@@ -86,9 +94,19 @@ L.tileLayer(tileUrl).addTo(map);
 lines = initLines(lines.features);
 stations = stations.features;
 var stationsLayer = null;
-var runSelection = function (selection) {
+var selectStop = function (selection) {
     var _a;
     _a = mapInput(map, lines, stations, stationsLayer, selection), lines = _a[0], stations = _a[1], stationsLayer = _a[2];
 };
-["G", "R", "F"].forEach(runSelection);
+var checkKey = function (keyStroke) {
+    return contains(Object.keys(keysToStops).join(", "))(keyStroke.toString());
+};
+var refresh = function () { return location.reload(); };
+window.onkeydown = function (e) {
+    return e.keyCode ? checkKey(e.keyCode) ? selectStop(keysToStops[e.keyCode])
+        : e.keyCode === 27 ? refresh()
+            : null
+        : null;
+};
+// ["G", "R", "F"].forEach(selectStop);
 // location.reload();
