@@ -3,7 +3,6 @@
 declare var keyInputs: any;
 declare var L        : any;
 declare var lines    : any;
-// declare var location : Location;
 declare var stations : any;
 
 interface Row     { properties: any; // not much type safety here...
@@ -28,11 +27,10 @@ const origin : number[] = [  40.7128
 //                           , zoomControl    : false
 //                           };
 
-const allStops = [ "1", "2", "3", "4", "5", "6", "7"
-                 , "A", "B", "C", "D", "E", "F", "G"
-                 , "J", "L", "M", "N", "Q", "R", "S"
-                 ];
-
+const allStops    = [ "1", "2", "3", "4", "5", "6", "7"
+                    , "A", "B", "C", "D", "E", "F", "G"
+                    , "J", "L", "M", "N", "Q", "R", "S"
+                    ];
 const keysToStops = allStops.reduce(
     (obj, stop) => {
         obj[keyInputs[stop.toLowerCase()]] = stop;
@@ -44,8 +42,8 @@ const keysToStops = allStops.reduce(
 // shared utility functions
 //
 const contains    = (mainString: string) => (subString: string): boolean => {
-    return mainString.indexOf(subString) >= 0 ? true
-                                              : false;
+    return mainString.indexOf(subString) < 0 ? false
+                                             : true;
 };
 const dashes      = (str: string): string => `-${str}-`;
 const checkField  = (searchTerm: string, field: string) =>
@@ -59,6 +57,11 @@ const unique      = (myArray)    => {
 };
 const checkLength = (myArray, f) => myArray.length > 0 ? f(myArray)
                                                        : null;
+const checkKey    = (keyStroke)  => {
+    return contains(Object.keys(keysToStops).join(", "))(keyStroke.toString());
+};
+const refresh     = ()           => location.reload();
+
 //
 // station search pattern
 //
@@ -112,6 +115,15 @@ const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
     return [linesOutput, stationsOutput, newStationsLayer];
 };
 
+const selectStop = (selection) => {
+    [lines, stations, stationsLayer] = mapInput( map
+                                               , lines
+                                               , stations
+                                               , stationsLayer
+                                               , selection
+                                               );
+};
+
 //
 // main
 //
@@ -124,21 +136,6 @@ stations = stations.features;
 
 let stationsLayer = null;
 
-const selectStop = (selection) => {
-    [lines, stations, stationsLayer] = mapInput( map
-                                               , lines
-                                               , stations
-                                               , stationsLayer
-                                               , selection
-                                               );
-};
-
-const checkKey = (keyStroke) => {
-    return contains(Object.keys(keysToStops).join(", "))(keyStroke.toString());
-};
-
-const refresh = () => location.reload();
-
 window.onkeydown = (e) => {
     return e.keyCode ? checkKey(e.keyCode) ? selectStop(keysToStops[e.keyCode])
                                            : e.keyCode === 27 ? refresh()
@@ -147,4 +144,3 @@ window.onkeydown = (e) => {
 };
 
 // ["G", "R", "F"].forEach(selectStop);
-// location.reload();

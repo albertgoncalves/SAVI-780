@@ -24,8 +24,8 @@ var keysToStops = allStops.reduce(function (obj, stop) {
 // shared utility functions
 //
 var contains = function (mainString) { return function (subString) {
-    return mainString.indexOf(subString) >= 0 ? true
-        : false;
+    return mainString.indexOf(subString) < 0 ? false
+        : true;
 }; };
 var dashes = function (str) { return "-" + str + "-"; };
 var checkField = function (searchTerm, field) {
@@ -40,6 +40,10 @@ var unique = function (myArray) {
 };
 var checkLength = function (myArray, f) { return myArray.length > 0 ? f(myArray)
     : null; };
+var checkKey = function (keyStroke) {
+    return contains(Object.keys(keysToStops).join(", "))(keyStroke.toString());
+};
+var refresh = function () { return location.reload(); };
 //
 // station search pattern
 //
@@ -85,6 +89,10 @@ var mapInput = function (mapVar, linesInput, stationsInput, layerInput, keyInput
     ].forEach(checkOutput);
     return [linesOutput, stationsOutput, newStationsLayer];
 };
+var selectStop = function (selection) {
+    var _a;
+    _a = mapInput(map, lines, stations, stationsLayer, selection), lines = _a[0], stations = _a[1], stationsLayer = _a[2];
+};
 //
 // main
 //
@@ -94,14 +102,6 @@ L.tileLayer(tileUrl).addTo(map);
 lines = initLines(lines.features);
 stations = stations.features;
 var stationsLayer = null;
-var selectStop = function (selection) {
-    var _a;
-    _a = mapInput(map, lines, stations, stationsLayer, selection), lines = _a[0], stations = _a[1], stationsLayer = _a[2];
-};
-var checkKey = function (keyStroke) {
-    return contains(Object.keys(keysToStops).join(", "))(keyStroke.toString());
-};
-var refresh = function () { return location.reload(); };
 window.onkeydown = function (e) {
     return e.keyCode ? checkKey(e.keyCode) ? selectStop(keysToStops[e.keyCode])
         : e.keyCode === 27 ? refresh()
@@ -109,4 +109,3 @@ window.onkeydown = function (e) {
         : null;
 };
 // ["G", "R", "F"].forEach(selectStop);
-// location.reload();
