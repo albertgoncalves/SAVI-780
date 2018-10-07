@@ -18,14 +18,14 @@ const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
 const origin : number[] = [  40.7128
                           , -74.0060
                           ];
-const mapOpt            = { doubleClickZoom: false
-                          , dragging       : false
-                          , keyboard       : false
-                          , scrollWheelZoom: false
-                          , tap            : false
-                          , touchZoom      : false
-                          , zoomControl    : false
-                          };
+// const mapOpt            = { doubleClickZoom: false
+//                           , dragging       : false
+//                           , keyboard       : false
+//                           , scrollWheelZoom: false
+//                           , tap            : false
+//                           , touchZoom      : false
+//                           , zoomControl    : false
+//                           };
 
 //
 // shared utility functions
@@ -40,7 +40,6 @@ const checkField  = (searchTerm: string, field: string) =>
     const column: string = row.properties[field];
     return contains(column)(dashes(searchTerm));
 };
-const cloneObj    = (obj)        => JSON.parse(JSON.stringify(obj));
 const initLines   = (linesObj)   => ({take: [], drop: linesObj});
 const unique      = (myArray)    => {
     return (myArray.filter((v, i, a) => a.indexOf(v) === i));
@@ -55,7 +54,7 @@ const search = (featureArray: Row[], searchTerm: string): Row[] => {
 };
 
 //
-// line search pattern
+// lines search pattern
 //
 const splitSearch = (featureArray: Row[], searchTerm: string): Splits => {
     const take = [] as Row[];
@@ -87,17 +86,17 @@ const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
     const linesOutput    = splitSearch(linesInput.drop, keyInput);
     const stationsOutput = search(stationsInput       , keyInput);
 
-    _ = layerInput !== null ? layerInput.clearLayers()
-                            : null;
+    let _ = layerInput !== null ? layerInput.clearLayers()
+                                : null;
 
-    const newLayer = checkLength(stationsOutput  , loadData(mapVar));
-    _              = checkLength(linesOutput.take, loadData(mapVar));
+    _                      = checkLength(linesOutput.take, loadData(mapVar));
+    const newStationsLayer = checkLength(stationsOutput  , loadData(mapVar));
 
     [ [linesOutput.take, "name"] as any
     , [stationsOutput  , "line"] as any
     ].forEach(checkOutput);
 
-    return [linesOutput, stationsOutput, newLayer];
+    return [linesOutput, stationsOutput, newStationsLayer];
 };
 
 //
@@ -107,10 +106,9 @@ const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
 const map = L.map("map").setView(origin, 12);
 L.tileLayer(tileUrl).addTo(map);
 
-lines    = cloneObj(initLines(lines.features));
-stations = cloneObj(stations.features);
+lines    = initLines(lines.features);
+stations = stations.features;
 
-let _;
 let stationsLayer = null;
 
 const runSelection = (selection) => {

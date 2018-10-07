@@ -4,14 +4,14 @@ var tileUrl = ("https://stamen-tiles.a.ssl.fastly.net/toner/"
 var origin = [40.7128,
     -74.0060
 ];
-var mapOpt = { doubleClickZoom: false,
-    dragging: false,
-    keyboard: false,
-    scrollWheelZoom: false,
-    tap: false,
-    touchZoom: false,
-    zoomControl: false
-};
+// const mapOpt            = { doubleClickZoom: false
+//                           , dragging       : false
+//                           , keyboard       : false
+//                           , scrollWheelZoom: false
+//                           , tap            : false
+//                           , touchZoom      : false
+//                           , zoomControl    : false
+//                           };
 //
 // shared utility functions
 //
@@ -26,7 +26,6 @@ var checkField = function (searchTerm, field) {
         return contains(column)(dashes(searchTerm));
     };
 };
-var cloneObj = function (obj) { return JSON.parse(JSON.stringify(obj)); };
 var initLines = function (linesObj) { return ({ take: [], drop: linesObj }); };
 var unique = function (myArray) {
     return (myArray.filter(function (v, i, a) { return a.indexOf(v) === i; }));
@@ -40,7 +39,7 @@ var search = function (featureArray, searchTerm) {
     return featureArray.filter(checkField(searchTerm, "line"));
 };
 //
-// line search pattern
+// lines search pattern
 //
 var splitSearch = function (featureArray, searchTerm) {
     var take = [];
@@ -69,14 +68,14 @@ var checkOutput = function (_a) {
 var mapInput = function (mapVar, linesInput, stationsInput, layerInput, keyInput) {
     var linesOutput = splitSearch(linesInput.drop, keyInput);
     var stationsOutput = search(stationsInput, keyInput);
-    _ = layerInput !== null ? layerInput.clearLayers()
+    var _ = layerInput !== null ? layerInput.clearLayers()
         : null;
-    var newLayer = checkLength(stationsOutput, loadData(mapVar));
     _ = checkLength(linesOutput.take, loadData(mapVar));
+    var newStationsLayer = checkLength(stationsOutput, loadData(mapVar));
     [[linesOutput.take, "name"],
         [stationsOutput, "line"]
     ].forEach(checkOutput);
-    return [linesOutput, stationsOutput, newLayer];
+    return [linesOutput, stationsOutput, newStationsLayer];
 };
 //
 // main
@@ -84,9 +83,8 @@ var mapInput = function (mapVar, linesInput, stationsInput, layerInput, keyInput
 // const map = L.map("map", mapOpt).setView(origin, 12);
 var map = L.map("map").setView(origin, 12);
 L.tileLayer(tileUrl).addTo(map);
-lines = cloneObj(initLines(lines.features));
-stations = cloneObj(stations.features);
-var _;
+lines = initLines(lines.features);
+stations = stations.features;
 var stationsLayer = null;
 var runSelection = function (selection) {
     var _a;
