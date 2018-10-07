@@ -1,17 +1,25 @@
 // tslint script.ts; tsc script.ts;
+// interface MapOpts { doubleClickZoom: boolean;
+//                     dragging       : boolean;
+//                     keyboard       : boolean;
+//                     scrollWheelZoom: boolean;
+//                     tap            : boolean;
+//                     touchZoom      : boolean;
+//                     zoomControl    : boolean;
+//                   }
 var tileUrl = ("https://stamen-tiles.a.ssl.fastly.net/toner/"
     + "{z}/{x}/{y}.png");
 var origin = [40.7128,
     -74.0060
 ];
-var mapOpt = { doubleClickZoom: false,
-    dragging: false,
-    keyboard: false,
-    scrollWheelZoom: false,
-    tap: false,
-    touchZoom: false,
-    zoomControl: false
-};
+// const mapOpt : MapOpts  = { doubleClickZoom: false
+//                           , dragging       : false
+//                           , keyboard       : false
+//                           , scrollWheelZoom: false
+//                           , tap            : false
+//                           , touchZoom      : false
+//                           , zoomControl    : false
+//                           };
 //
 // shared utility functions
 //
@@ -50,41 +58,39 @@ var splitSearch = function (featureArray, searchTerm) {
 //
 var loadData = function (mapVar, dataVar, mapLayer) {
     if (mapLayer === void 0) { mapLayer = null; }
-    var _ = mapLayer !== null === true ? mapLayer.clearLayers()
-        : null;
+    mapLayer = clearLayer(mapLayer);
     var mapData = L.geoJson(dataVar);
     mapLayer = mapData.addTo(mapVar);
     map.fitBounds(mapData.getBounds());
     return mapLayer;
 };
+var clearLayer = function (pointsLayerB) {
+    return pointsLayerB !== null === true ? pointsLayerB.clearLayers()
+        : null;
+};
 var mapInput = function (mapVar, linesInput, sttnsInput, pointsLayerA, input) {
     var linesOutput = splitSearch(linesInput.drop, input);
     var sttnsOutput = search(sttnsInput, input);
-    loadData(mapVar, linesOutput.take);
-    var newLayer = loadData(mapVar, sttnsOutput, pointsLayerA);
+    var _ = linesOutput.take.length > 0 ? loadData(mapVar, linesOutput.take)
+        : null; // pass
+    var newLayer = sttnsOutput.length > 0 ? loadData(mapVar, sttnsOutput, pointsLayerA)
+        : clearLayer(pointsLayerA);
     return [linesOutput, sttnsOutput, newLayer];
 };
 var cloneObj = function (obj) { return JSON.parse(JSON.stringify(obj)); };
+var initLines = function (linesObj) {
+    return ({ take: [], drop: linesObj });
+};
 //
 // main
 //
-var map = L.map("map", mapOpt).setView(origin, 10);
+// const map = L.map("map", mapOpt).setView(origin, 10);
+var map = L.map("map").setView(origin, 10);
 L.tileLayer(tileUrl).addTo(map);
-var linesMap = cloneObj(lines.features);
+var linesMap = cloneObj(initLines(lines.features));
 var sttnsMap = cloneObj(sttns.features);
-var sttnsG = search(sttns.features, "G");
-var sttnsGR = search(sttnsG, "R");
-var sttnsGRF = search(sttnsGR, "F");
-var linesG = splitSearch(lines.features, "G"); // matched rows since
-var linesR = splitSearch(linesG.drop, "R"); // they are already
-var linesF = splitSearch(linesR.drop, "F"); // on the map!
-var pointsLayer = null; // initialize points layer ...
-// points need to be cleared after each selection
-pointsLayer = loadData(map, sttnsG, pointsLayer);
-loadData(map, linesG.take); // mapLayer variable can be ignored for lines ...
-// lines search pattern will never duplicate
-setTimeout(function () {
-    pointsLayer = loadData(map, sttnsGRF, pointsLayer);
-    loadData(map, linesR.take);
-    loadData(map, linesF.take);
-}, 3000);
+var pointsLayer = null;
+["G"].forEach(function (selection) {
+    var _a;
+    _a = mapInput(map, linesMap, sttnsMap, pointsLayer, selection), linesMap = _a[0], sttnsMap = _a[1], pointsLayer = _a[2];
+});
