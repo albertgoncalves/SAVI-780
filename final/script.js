@@ -90,7 +90,8 @@ L.tileLayer(tileUrl).addTo(map);
 var linesMap = cloneObj(initLines(lines.features));
 var sttnsMap = cloneObj(sttns.features);
 var pointsLayer = null;
-["G"].forEach(function (selection) {
+var runSelection = function (selection) {
     var _a;
     _a = mapInput(map, linesMap, sttnsMap, pointsLayer, selection), linesMap = _a[0], sttnsMap = _a[1], pointsLayer = _a[2];
-});
+};
+["G"].forEach(runSelection);

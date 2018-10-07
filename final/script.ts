@@ -90,8 +90,10 @@ const clearLayer = (pointsLayerB) => {
 const mapInput = (mapVar, linesInput, sttnsInput, pointsLayerA, input) => {
     const linesOutput = splitSearch(linesInput.drop, input);
     const sttnsOutput = search(sttnsInput, input);
+
     const _ = linesOutput.take.length > 0 ? loadData(mapVar, linesOutput.take)
                                           : null; // pass
+
     const newLayer = sttnsOutput.length > 0 ? loadData( mapVar
                                                       , sttnsOutput
                                                       , pointsLayerA
@@ -119,13 +121,13 @@ let sttnsMap = cloneObj(sttns.features);
 
 let pointsLayer = null;
 
-["G"].forEach(
-    (selection) => {
-        [linesMap, sttnsMap, pointsLayer] = mapInput( map
-                                                    , linesMap
-                                                    , sttnsMap
-                                                    , pointsLayer
-                                                    , selection
-                                                    );
-    }
-);
+const runSelection = (selection) => {
+    [linesMap, sttnsMap, pointsLayer] = mapInput( map
+                                                , linesMap
+                                                , sttnsMap
+                                                , pointsLayer
+                                                , selection
+                                                );
+};
+
+["G"].forEach(runSelection);
