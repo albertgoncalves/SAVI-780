@@ -72,33 +72,29 @@ const splitSearch = (featureArray: Row[], searchTerm: string): Splits => {
 //
 // geojson loader
 //
-const loadData = (mapVar, dataVar, mapLayer = null) => {
-    mapLayer = clearLayer(mapLayer);
-
+const loadData = (mapVar, dataVar) => {
     const mapData = L.geoJson(dataVar);
-    mapLayer = mapData.addTo(mapVar);
+    const newLayer = mapData.addTo(mapVar);
     map.fitBounds(mapData.getBounds());
 
-    return mapLayer;
-};
-
-const clearLayer = (pointsLayerB) => {
-    return pointsLayerB !== null === true ? pointsLayerB.clearLayers()
-                                          : null;
+    return newLayer;
 };
 
 const mapInput = (mapVar, linesInput, sttnsInput, pointsLayerA, input) => {
+    let _; // trash
     const linesOutput = splitSearch(linesInput.drop, input);
     const sttnsOutput = search(sttnsInput, input);
 
-    const _ = linesOutput.take.length > 0 ? loadData(mapVar, linesOutput.take)
-                                          : null; // pass
+    _ = pointsLayerA !== null === true ? pointsLayerA.clearLayers()
+                                       : null;
 
     const newLayer = sttnsOutput.length > 0 ? loadData( mapVar
                                                       , sttnsOutput
-                                                      , pointsLayerA
                                                       )
-                                            : clearLayer(pointsLayerA);
+                                            : null;
+
+    _ = linesOutput.take.length > 0 ? loadData(mapVar, linesOutput.take)
+                                    : null;
 
     return [linesOutput, sttnsOutput, newLayer];
 };

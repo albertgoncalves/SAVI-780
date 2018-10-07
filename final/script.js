@@ -56,25 +56,22 @@ var splitSearch = function (featureArray, searchTerm) {
 //
 // geojson loader
 //
-var loadData = function (mapVar, dataVar, mapLayer) {
-    if (mapLayer === void 0) { mapLayer = null; }
-    mapLayer = clearLayer(mapLayer);
+var loadData = function (mapVar, dataVar) {
     var mapData = L.geoJson(dataVar);
-    mapLayer = mapData.addTo(mapVar);
+    var newLayer = mapData.addTo(mapVar);
     map.fitBounds(mapData.getBounds());
-    return mapLayer;
-};
-var clearLayer = function (pointsLayerB) {
-    return pointsLayerB !== null === true ? pointsLayerB.clearLayers()
-        : null;
+    return newLayer;
 };
 var mapInput = function (mapVar, linesInput, sttnsInput, pointsLayerA, input) {
+    var _; // trash
     var linesOutput = splitSearch(linesInput.drop, input);
     var sttnsOutput = search(sttnsInput, input);
-    var _ = linesOutput.take.length > 0 ? loadData(mapVar, linesOutput.take)
-        : null; // pass
-    var newLayer = sttnsOutput.length > 0 ? loadData(mapVar, sttnsOutput, pointsLayerA)
-        : clearLayer(pointsLayerA);
+    _ = pointsLayerA !== null === true ? pointsLayerA.clearLayers()
+        : null;
+    var newLayer = sttnsOutput.length > 0 ? loadData(mapVar, sttnsOutput)
+        : null;
+    _ = linesOutput.take.length > 0 ? loadData(mapVar, linesOutput.take)
+        : null;
     return [linesOutput, sttnsOutput, newLayer];
 };
 var cloneObj = function (obj) { return JSON.parse(JSON.stringify(obj)); };
