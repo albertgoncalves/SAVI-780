@@ -34,6 +34,8 @@ var checkField = function (searchTerm, field) {
         return contains(column)(dashes(searchTerm));
     };
 };
+var cloneObj = function (obj) { return JSON.parse(JSON.stringify(obj)); };
+var initLines = function (linesObj) { return ({ take: [], drop: linesObj }); };
 //
 // station search pattern
 //
@@ -62,21 +64,28 @@ var loadData = function (mapVar, dataVar) {
     map.fitBounds(mapData.getBounds());
     return newLayer;
 };
-var mapInput = function (mapVar, linesInput, sttnsInput, pointsLayerA, input) {
-    var _; // trash
-    var linesOutput = splitSearch(linesInput.drop, input);
-    var sttnsOutput = search(sttnsInput, input);
-    _ = pointsLayerA !== null === true ? pointsLayerA.clearLayers()
+var unique = function (myArray) { return myArray.filter(function (v, i, a) { return a.indexOf(v) === i; }); };
+var mapInput = function (mapVar, linesInput, sttnsInput, layerInput, keyInput) {
+    var _; // trash collector
+    var linesOutput = splitSearch(linesInput.drop, keyInput);
+    var sttnsOutput = search(sttnsInput, keyInput);
+    // clear existing points
+    _ = layerInput !== null ? layerInput.clearLayers()
         : null;
+    // load new points, return layer
     var newLayer = sttnsOutput.length > 0 ? loadData(mapVar, sttnsOutput)
         : null;
+    // load new lines, layer not needed
     _ = linesOutput.take.length > 0 ? loadData(mapVar, linesOutput.take)
         : null;
+    // check output
+    [{ rows: linesOutput.take, column: "name" },
+        { rows: sttnsOutput, column: "line" }
+    ].forEach(function (obj) {
+        console.log(unique(obj.rows.map(function (row) { return row.properties[obj.column]; })));
+        console.log(obj.rows.length);
+    });
     return [linesOutput, sttnsOutput, newLayer];
-};
-var cloneObj = function (obj) { return JSON.parse(JSON.stringify(obj)); };
-var initLines = function (linesObj) {
-    return ({ take: [], drop: linesObj });
 };
 //
 // main
@@ -86,9 +95,9 @@ var map = L.map("map").setView(origin, 10);
 L.tileLayer(tileUrl).addTo(map);
 var linesMap = cloneObj(initLines(lines.features));
 var sttnsMap = cloneObj(sttns.features);
-var pointsLayer = null;
+var sttnsLayer = null;
 var runSelection = function (selection) {
     var _a;
-    _a = mapInput(map, linesMap, sttnsMap, pointsLayer, selection), linesMap = _a[0], sttnsMap = _a[1], pointsLayer = _a[2];
+    _a = mapInput(map, linesMap, sttnsMap, sttnsLayer, selection), linesMap = _a[0], sttnsMap = _a[1], sttnsLayer = _a[2];
 };
-["G"].forEach(runSelection);
+["G", "R", "F"].forEach(runSelection);

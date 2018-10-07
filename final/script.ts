@@ -4,7 +4,7 @@ declare var L     : any;
 declare var lines : any;
 declare var sttns : any;
 
-interface Row     { properties: object; // not much type safety here...
+interface Row     { properties: any; // not much type safety here...
                   }
 
 interface Splits  { take: Row[];
@@ -38,16 +38,18 @@ const origin : number[] = [  40.7128
 //
 // shared utility functions
 //
-const contains = (mainString: string) => (subString: string): boolean => {
+const contains   = (mainString: string) => (subString: string): boolean => {
     return mainString.indexOf(subString) >= 0 ? true
                                               : false;
 };
-const dashes = (str: string): string => `-${str}-`;
+const dashes     = (str: string): string => `-${str}-`;
 const checkField = (searchTerm: string, field: string) =>
                    (row: Row): boolean => {
     const column: string = row.properties[field];
     return contains(column)(dashes(searchTerm));
 };
+const cloneObj   = (obj)      => JSON.parse(JSON.stringify(obj));
+const initLines  = (linesObj) => ({take: [], drop: linesObj});
 
 //
 // station search pattern
@@ -73,36 +75,44 @@ const splitSearch = (featureArray: Row[], searchTerm: string): Splits => {
 // geojson loader
 //
 const loadData = (mapVar, dataVar) => {
-    const mapData = L.geoJson(dataVar);
+    const mapData  = L.geoJson(dataVar);
     const newLayer = mapData.addTo(mapVar);
     map.fitBounds(mapData.getBounds());
 
     return newLayer;
 };
 
-const mapInput = (mapVar, linesInput, sttnsInput, pointsLayerA, input) => {
-    let _; // trash
-    const linesOutput = splitSearch(linesInput.drop, input);
-    const sttnsOutput = search(sttnsInput, input);
+const unique = (myArray) => myArray.filter((v, i, a) => a.indexOf(v) === i);
 
-    _ = pointsLayerA !== null === true ? pointsLayerA.clearLayers()
-                                       : null;
+const mapInput = (mapVar, linesInput, sttnsInput, layerInput, keyInput) => {
+    let _; // trash collector
+    const linesOutput = splitSearch(linesInput.drop, keyInput);
+    const sttnsOutput = search(sttnsInput, keyInput);
 
-    const newLayer = sttnsOutput.length > 0 ? loadData( mapVar
-                                                      , sttnsOutput
-                                                      )
+    // clear existing points
+    _ = layerInput !== null ? layerInput.clearLayers()
+                            : null;
+    // load new points, return layer
+    const newLayer = sttnsOutput.length > 0 ? loadData(mapVar, sttnsOutput)
                                             : null;
 
+    // load new lines, layer not needed
     _ = linesOutput.take.length > 0 ? loadData(mapVar, linesOutput.take)
                                     : null;
 
+    // check output
+    [ {rows: linesOutput.take, column: "name"} as any
+    , {rows: sttnsOutput     , column: "line"} as any
+    ].forEach(
+        (obj) => {
+            console.log(
+                unique(obj.rows.map((row) => row.properties[obj.column]))
+            );
+            console.log(obj.rows.length);
+        }
+    );
+
     return [linesOutput, sttnsOutput, newLayer];
-};
-
-const cloneObj = (obj) => JSON.parse(JSON.stringify(obj));
-
-const initLines = (linesObj) => {
-    return({take: [], drop: linesObj});
 };
 
 //
@@ -112,18 +122,17 @@ const initLines = (linesObj) => {
 const map = L.map("map").setView(origin, 10);
 L.tileLayer(tileUrl).addTo(map);
 
-let linesMap = cloneObj(initLines(lines.features));
-let sttnsMap = cloneObj(sttns.features);
-
-let pointsLayer = null;
+let linesMap   = cloneObj(initLines(lines.features));
+let sttnsMap   = cloneObj(sttns.features);
+let sttnsLayer = null;
 
 const runSelection = (selection) => {
-    [linesMap, sttnsMap, pointsLayer] = mapInput( map
-                                                , linesMap
-                                                , sttnsMap
-                                                , pointsLayer
-                                                , selection
-                                                );
+    [linesMap, sttnsMap, sttnsLayer] = mapInput( map
+                                               , linesMap
+                                               , sttnsMap
+                                               , sttnsLayer
+                                               , selection
+                                               );
 };
 
-["G"].forEach(runSelection);
+["G", "R", "F"].forEach(runSelection);
