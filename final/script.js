@@ -12,15 +12,6 @@ var origin = [40.741,
 //                           , touchZoom      : false
 //                           , zoomControl    : false
 //                           };
-var allStops = ["1", "2", "3", "4", "5", "6", "7",
-    "A", "B", "C", "D", "E", "F", "G",
-    "J", "L", "M", "N", "Q", "R", "S",
-    "Z"
-];
-var keysToStops = allStops.reduce(function (obj, stop) {
-    obj[keyInputs[stop.toLowerCase()]] = stop;
-    return obj;
-}, {});
 var colorMap = { 1: [0, 80, 50],
     2: [0, 80, 50],
     3: [0, 80, 50],
@@ -45,6 +36,11 @@ var colorMap = { 1: [0, 80, 50],
     W: [55, 90, 50],
     S: [0, 0, 40]
 };
+var allStops = Object.keys(colorMap).map(function (x) { return x.toString(); });
+var keysToStops = allStops.reduce(function (obj, stop) {
+    obj[keyInputs[stop.toLowerCase()]] = stop;
+    return obj;
+}, {});
 //
 // shared utility functions
 //

@@ -27,17 +27,6 @@ const origin : number[] = [  40.741
 //                           , zoomControl    : false
 //                           };
 
-const allStops    = [ "1", "2", "3", "4", "5", "6", "7"
-                    , "A", "B", "C", "D", "E", "F", "G"
-                    , "J", "L", "M", "N", "Q", "R", "S"
-                    , "Z"
-                    ];
-const keysToStops = allStops.reduce(
-    (obj, stop) => {
-        obj[keyInputs[stop.toLowerCase()]] = stop;
-        return obj;
-    }, {}
-);
 const colorMap    = { 1: [  0, 80, 50]
                     , 2: [  0, 80, 50]
                     , 3: [  0, 80, 50]
@@ -62,6 +51,13 @@ const colorMap    = { 1: [  0, 80, 50]
                     , W: [ 55, 90, 50]
                     , S: [  0,  0, 40]
                     };
+const allStops    = Object.keys(colorMap).map((x) => x.toString());
+const keysToStops = allStops.reduce(
+    (obj, stop) => {
+        obj[keyInputs[stop.toLowerCase()]] = stop;
+        return obj;
+    }, {}
+);
 
 //
 // shared utility functions
