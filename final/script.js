@@ -1,8 +1,8 @@
 // tslint script.ts; tsc script.ts;
 var tileUrl = ("https://stamen-tiles.a.ssl.fastly.net/toner/"
     + "{z}/{x}/{y}.png");
-var origin = [40.7128,
-    -74.0060
+var origin = [40.741,
+    -73.925
 ];
 // const mapOpt            = { doubleClickZoom: false
 //                           , dragging       : false

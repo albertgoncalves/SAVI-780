@@ -15,8 +15,8 @@ interface Splits  { take: Row[];
 const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
                           + "{z}/{x}/{y}.png"
                           );
-const origin : number[] = [  40.7128
-                          , -74.0060
+const origin : number[] = [  40.741
+                          , -73.925
                           ];
 // const mapOpt            = { doubleClickZoom: false
 //                           , dragging       : false
