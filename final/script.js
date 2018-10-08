@@ -14,12 +14,38 @@ var origin = [40.7128,
 //                           };
 var allStops = ["1", "2", "3", "4", "5", "6", "7",
     "A", "B", "C", "D", "E", "F", "G",
-    "J", "L", "M", "N", "Q", "R", "S"
+    "J", "L", "M", "N", "Q", "R", "S",
+    "Z"
 ];
 var keysToStops = allStops.reduce(function (obj, stop) {
     obj[keyInputs[stop.toLowerCase()]] = stop;
     return obj;
 }, {});
+var colorMap = { 1: 0,
+    2: 0,
+    3: 0,
+    4: 135,
+    5: 135,
+    6: 135,
+    7: 295,
+    A: 250,
+    C: 250,
+    E: 250,
+    B: 30,
+    D: 30,
+    F: 30,
+    M: 30,
+    G: 95,
+    J: 35,
+    Z: 35,
+    L: 0 // need gray!
+    ,
+    N: 50,
+    Q: 50,
+    R: 50,
+    W: 50,
+    S: 0 // need gray!
+};
 //
 // shared utility functions
 //
@@ -66,8 +92,8 @@ var splitSearch = function (featureArray, searchTerm) {
 //
 // geojson loader
 //
-var loadData = function (mapVar) { return function (dataVar) {
-    var mapData = L.geoJson(dataVar);
+var loadData = function (mapVar, style) { return function (dataVar) {
+    var mapData = L.geoJson(dataVar, style);
     var newLayer = mapData.addTo(mapVar);
     // map.fitBounds(mapData.getBounds());
     return newLayer;
@@ -77,13 +103,28 @@ var checkOutput = function (_a) {
     console.log(unique(rows.map(function (row) { return row.properties[column]; })));
     console.log(rows.length);
 };
+var pointToCircle = function (geoJsonPoint, latlng) { return L.circleMarker(latlng); };
+var styleCircle = function (color) { return function (geoJsonFeature) {
+    return { fillColor: color,
+        radius: 6,
+        fillOpacity: 0.75,
+        stroke: false
+    };
+}; };
+var circleStyle = function (color) {
+    return { pointToLayer: pointToCircle,
+        style: styleCircle(color)
+    };
+};
+var lineStyle = function (inputColor) { return ({ style: { color: inputColor } }); };
 var mapInput = function (mapVar, linesInput, stationsInput, layerInput, keyInput) {
     var linesOutput = splitSearch(linesInput.drop, keyInput);
     var stationsOutput = search(stationsInput, keyInput);
     var _ = layerInput !== null ? layerInput.clearLayers()
         : null;
-    _ = checkLength(linesOutput.take, loadData(mapVar));
-    var newStationsLayer = checkLength(stationsOutput, loadData(mapVar));
+    var color = "hsl(" + colorMap[keyInput].toString() + ", 100%, 50%)";
+    _ = checkLength(linesOutput.take, loadData(mapVar, lineStyle(color)));
+    var newStationsLayer = checkLength(stationsOutput, loadData(mapVar, circleStyle(color)));
     [[linesOutput.take, "name"],
         [stationsOutput, "line"]
     ].forEach(checkOutput);

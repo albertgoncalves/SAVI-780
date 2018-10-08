@@ -30,6 +30,7 @@ const origin : number[] = [  40.7128
 const allStops    = [ "1", "2", "3", "4", "5", "6", "7"
                     , "A", "B", "C", "D", "E", "F", "G"
                     , "J", "L", "M", "N", "Q", "R", "S"
+                    , "Z"
                     ];
 const keysToStops = allStops.reduce(
     (obj, stop) => {
@@ -37,6 +38,31 @@ const keysToStops = allStops.reduce(
         return obj;
     }, {}
 );
+
+const colorMap = { 1: 0
+                 , 2: 0
+                 , 3: 0
+                 , 4: 135
+                 , 5: 135
+                 , 6: 135
+                 , 7: 295
+                 , A: 250
+                 , C: 250
+                 , E: 250
+                 , B: 30
+                 , D: 30
+                 , F: 30
+                 , M: 30
+                 , G: 95
+                 , J: 35
+                 , Z: 35
+                 , L: 0 // need gray!
+                 , N: 50
+                 , Q: 50
+                 , R: 50
+                 , W: 50
+                 , S: 0 // need gray!
+                 };
 
 //
 // shared utility functions
@@ -85,8 +111,8 @@ const splitSearch = (featureArray: Row[], searchTerm: string): Splits => {
 //
 // geojson loader
 //
-const loadData = (mapVar) => (dataVar) => {
-    const mapData  = L.geoJson(dataVar);
+const loadData = (mapVar, style) => (dataVar) => {
+    const mapData  = L.geoJson(dataVar, style);
     const newLayer = mapData.addTo(mapVar);
     // map.fitBounds(mapData.getBounds());
 
@@ -98,6 +124,23 @@ const checkOutput = ([rows, column]) => {
     console.log(rows.length);
 };
 
+const pointToCircle = (geoJsonPoint, latlng) => L.circleMarker(latlng);
+const styleCircle   = (color) => (geoJsonFeature) => {
+    return { fillColor  : color
+           , radius     : 6
+           , fillOpacity: 0.75
+           , stroke     : false
+           };
+};
+
+const circleStyle = (color) => {
+    return { pointToLayer: pointToCircle
+           , style       : styleCircle(color)
+           };
+};
+
+const lineStyle = (inputColor) => ({style: {color: inputColor}});
+
 const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
     const linesOutput    = splitSearch(linesInput.drop, keyInput);
     const stationsOutput = search(stationsInput       , keyInput);
@@ -105,8 +148,14 @@ const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
     let _ = layerInput !== null ? layerInput.clearLayers()
                                 : null;
 
-    _                      = checkLength(linesOutput.take, loadData(mapVar));
-    const newStationsLayer = checkLength(stationsOutput  , loadData(mapVar));
+    const color = "hsl(" + colorMap[keyInput].toString() + ", 100%, 50%)";
+
+    _                      = checkLength( linesOutput.take
+                                        , loadData(mapVar, lineStyle(color))
+                                        );
+    const newStationsLayer = checkLength( stationsOutput
+                                        , loadData(mapVar, circleStyle(color))
+                                        );
 
     [ [linesOutput.take, "name"] as any
     , [stationsOutput  , "line"] as any
