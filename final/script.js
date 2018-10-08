@@ -21,30 +21,29 @@ var keysToStops = allStops.reduce(function (obj, stop) {
     obj[keyInputs[stop.toLowerCase()]] = stop;
     return obj;
 }, {});
-var colorMap = { 1: 0,
-    2: 0,
-    3: 0,
-    4: 135,
-    5: 135,
-    6: 135,
-    7: 295,
-    A: 250,
-    C: 250,
-    E: 250,
-    B: 30,
-    D: 30,
-    F: 30,
-    M: 30,
-    G: 95,
-    J: 35,
-    Z: 35,
-    L: 0 // need gray!
-    ,
-    N: 50,
-    Q: 50,
-    R: 50,
-    W: 50,
-    S: 0 // need gray!
+var colorMap = { 1: [0, 80, 50],
+    2: [0, 80, 50],
+    3: [0, 80, 50],
+    4: [120, 60, 40],
+    5: [120, 60, 40],
+    6: [120, 60, 40],
+    7: [295, 55, 40],
+    A: [240, 55, 40],
+    C: [240, 55, 40],
+    E: [240, 55, 40],
+    B: [30, 80, 50],
+    D: [30, 80, 50],
+    F: [30, 80, 50],
+    M: [30, 80, 50],
+    G: [100, 80, 55],
+    J: [35, 50, 40],
+    Z: [35, 50, 40],
+    L: [0, 0, 35],
+    N: [55, 90, 50],
+    Q: [55, 90, 50],
+    R: [55, 90, 50],
+    W: [55, 90, 50],
+    S: [0, 0, 40]
 };
 //
 // shared utility functions
@@ -70,6 +69,16 @@ var checkKey = function (keyStroke) {
     return contains(Object.keys(keysToStops).join(", "))(keyStroke.toString());
 };
 var refresh = function () { return location.reload(); };
+var smudge = function (colorVal) {
+    var newVal = ((colorVal * 0.15) * (Math.random() - 0.5)) + colorVal;
+    return newVal < 0 ? "0"
+        : newVal.toString();
+};
+var arrayToHsl = function (_a) {
+    var h = _a[0], s = _a[1], l = _a[2];
+    var _b = [h, s, l].map(smudge), hh = _b[0], ss = _b[1], ll = _b[2];
+    return "hsl(" + hh + ", " + ss + "%, " + ll + "%)";
+};
 //
 // station search pattern
 //
@@ -104,27 +113,32 @@ var checkOutput = function (_a) {
     console.log(rows.length);
 };
 var pointToCircle = function (geoJsonPoint, latlng) { return L.circleMarker(latlng); };
-var styleCircle = function (color) { return function (geoJsonFeature) {
-    return { fillColor: color,
-        radius: 6,
-        fillOpacity: 0.75,
-        stroke: false
-    };
-}; };
-var circleStyle = function (color) {
+var markerToCircle = function (color) {
     return { pointToLayer: pointToCircle,
         style: styleCircle(color)
     };
 };
-var lineStyle = function (inputColor) { return ({ style: { color: inputColor } }); };
+var styleCircle = function (color) { return function (geoJsonFeature) {
+    return { fillColor: color,
+        radius: 6,
+        fillOpacity: 1,
+        stroke: false
+    };
+}; };
+var lineStyle = function (inputColor) {
+    return { style: { color: inputColor
+        },
+        weight: 5
+    };
+};
 var mapInput = function (mapVar, linesInput, stationsInput, layerInput, keyInput) {
     var linesOutput = splitSearch(linesInput.drop, keyInput);
     var stationsOutput = search(stationsInput, keyInput);
     var _ = layerInput !== null ? layerInput.clearLayers()
         : null;
-    var color = "hsl(" + colorMap[keyInput].toString() + ", 100%, 50%)";
+    var color = arrayToHsl(colorMap[keyInput]);
     _ = checkLength(linesOutput.take, loadData(mapVar, lineStyle(color)));
-    var newStationsLayer = checkLength(stationsOutput, loadData(mapVar, circleStyle(color)));
+    var newStationsLayer = checkLength(stationsOutput, loadData(mapVar, markerToCircle(color)));
     [[linesOutput.take, "name"],
         [stationsOutput, "line"]
     ].forEach(checkOutput);
@@ -137,8 +151,8 @@ var selectStop = function (selection) {
 //
 // main
 //
-// const map = L.map("map", mapOpt).setView(origin, 12);
-var map = L.map("map").setView(origin, 12);
+// const map = L.map("map", mapOpt).setView(origin, 11);
+var map = L.map("map").setView(origin, 11);
 L.tileLayer(tileUrl).addTo(map);
 lines = initLines(lines.features);
 stations = stations.features;

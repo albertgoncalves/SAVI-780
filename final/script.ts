@@ -38,31 +38,30 @@ const keysToStops = allStops.reduce(
         return obj;
     }, {}
 );
-
-const colorMap = { 1: 0
-                 , 2: 0
-                 , 3: 0
-                 , 4: 135
-                 , 5: 135
-                 , 6: 135
-                 , 7: 295
-                 , A: 250
-                 , C: 250
-                 , E: 250
-                 , B: 30
-                 , D: 30
-                 , F: 30
-                 , M: 30
-                 , G: 95
-                 , J: 35
-                 , Z: 35
-                 , L: 0 // need gray!
-                 , N: 50
-                 , Q: 50
-                 , R: 50
-                 , W: 50
-                 , S: 0 // need gray!
-                 };
+const colorMap    = { 1: [  0, 80, 50]
+                    , 2: [  0, 80, 50]
+                    , 3: [  0, 80, 50]
+                    , 4: [120, 60, 40]
+                    , 5: [120, 60, 40]
+                    , 6: [120, 60, 40]
+                    , 7: [295, 55, 40]
+                    , A: [240, 55, 40]
+                    , C: [240, 55, 40]
+                    , E: [240, 55, 40]
+                    , B: [ 30, 80, 50]
+                    , D: [ 30, 80, 50]
+                    , F: [ 30, 80, 50]
+                    , M: [ 30, 80, 50]
+                    , G: [100, 80, 55]
+                    , J: [ 35, 50, 40]
+                    , Z: [ 35, 50, 40]
+                    , L: [  0,  0, 35]
+                    , N: [ 55, 90, 50]
+                    , Q: [ 55, 90, 50]
+                    , R: [ 55, 90, 50]
+                    , W: [ 55, 90, 50]
+                    , S: [  0,  0, 40]
+                    };
 
 //
 // shared utility functions
@@ -87,6 +86,15 @@ const checkKey    = (keyStroke)  => {
     return contains(Object.keys(keysToStops).join(", "))(keyStroke.toString());
 };
 const refresh     = ()           => location.reload();
+const smudge      = (colorVal)   => {
+    const newVal = ((colorVal * 0.15) * (Math.random() - 0.5)) + colorVal;
+    return newVal < 0 ? "0"
+                      : newVal.toString();
+};
+const arrayToHsl  = ([h, s, l])  => {
+    const [hh, ss, ll] = [h, s, l].map(smudge);
+    return `hsl(${hh}, ${ss}%, ${ll}%)`;
+};
 
 //
 // station search pattern
@@ -125,21 +133,27 @@ const checkOutput = ([rows, column]) => {
 };
 
 const pointToCircle = (geoJsonPoint, latlng) => L.circleMarker(latlng);
-const styleCircle   = (color) => (geoJsonFeature) => {
-    return { fillColor  : color
-           , radius     : 6
-           , fillOpacity: 0.75
-           , stroke     : false
-           };
-};
 
-const circleStyle = (color) => {
+const markerToCircle = (color) => {
     return { pointToLayer: pointToCircle
            , style       : styleCircle(color)
            };
 };
 
-const lineStyle = (inputColor) => ({style: {color: inputColor}});
+const styleCircle   = (color) => (geoJsonFeature) => {
+    return { fillColor  : color
+           , radius     : 6
+           , fillOpacity: 1
+           , stroke     : false
+           };
+};
+
+const lineStyle = (inputColor) => {
+    return { style:  { color: inputColor
+                     }
+           , weight: 5
+           };
+};
 
 const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
     const linesOutput    = splitSearch(linesInput.drop, keyInput);
@@ -148,13 +162,17 @@ const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
     let _ = layerInput !== null ? layerInput.clearLayers()
                                 : null;
 
-    const color = "hsl(" + colorMap[keyInput].toString() + ", 100%, 50%)";
+    const color = arrayToHsl(colorMap[keyInput]);
 
     _                      = checkLength( linesOutput.take
-                                        , loadData(mapVar, lineStyle(color))
+                                        , loadData( mapVar
+                                                  , lineStyle(color)
+                                                  )
                                         );
     const newStationsLayer = checkLength( stationsOutput
-                                        , loadData(mapVar, circleStyle(color))
+                                        , loadData( mapVar
+                                                  , markerToCircle(color)
+                                                  )
                                         );
 
     [ [linesOutput.take, "name"] as any
@@ -176,8 +194,8 @@ const selectStop = (selection) => {
 //
 // main
 //
-// const map = L.map("map", mapOpt).setView(origin, 12);
-const map = L.map("map").setView(origin, 12);
+// const map = L.map("map", mapOpt).setView(origin, 11);
+const map = L.map("map").setView(origin, 11);
 L.tileLayer(tileUrl).addTo(map);
 
 lines    = initLines(lines.features);
