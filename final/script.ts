@@ -12,6 +12,9 @@ interface Splits  { take: Row[];
                     drop: Row[];
                   }
 
+//
+// variables
+//
 const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
                           + "{z}/{x}/{y}.png"
                           );
@@ -76,14 +79,10 @@ const initLines   = (linesObj)   => ({take: [], drop: linesObj});
 const unique      = (myArray)    => {
     return (myArray.filter((v, i, a) => a.indexOf(v) === i));
 };
-const checkLength = (myArray, f) => myArray.length > 0 ? f(myArray)
+const funIfLength = (myArray, f) => myArray.length > 0 ? f(myArray)
                                                        : null;
-const checkKey    = (keyStroke)  => {
-    return contains(Object.keys(keysToStops).join(", "))(keyStroke.toString());
-};
-const refresh     = ()           => location.reload();
 const smudge      = (colorVal)   => {
-    const newVal = ((colorVal * 0.15) * (Math.random() - 0.5)) + colorVal;
+    const  newVal = ((colorVal * 0.19) * (Math.random() - 0.5)) + colorVal;
     return newVal < 0 ? "0"
                       : newVal.toString();
 };
@@ -113,71 +112,72 @@ const splitSearch = (featureArray: Row[], searchTerm: string): Splits => {
 };
 
 //
-// geojson loader
+// geojson loader (and stylist)
 //
-const loadData = (mapVar, style) => (dataVar) => {
-    const mapData  = L.geoJson(dataVar, style);
-    const newLayer = mapData.addTo(mapVar);
-    // map.fitBounds(mapData.getBounds());
-
-    return newLayer;
-};
-
-const checkOutput = ([rows, column]) => {
-    console.log(unique(rows.map((row) => row.properties[column])));
-    console.log(rows.length);
-};
-
-const pointToCircle = (geoJsonPoint, latlng) => L.circleMarker(latlng);
-
-const markerToCircle = (color) => {
-    return { pointToLayer: pointToCircle
-           , style       : styleCircle(color)
-           };
-};
-
-const styleCircle   = (color) => (geoJsonFeature) => {
-    return { fillColor  : color
-           , radius     : 6
-           , fillOpacity: 1
-           , stroke     : false
-           };
-};
-
-const lineStyle = (inputColor) => {
-    return { style:  { color: inputColor
-                     }
-           , weight: 5
-           };
-};
-
 const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
+
+    const loadData = (style) => (dataVar) => {
+        const mapData  = L.geoJson(dataVar, style);
+        const newLayer = mapData.addTo(mapVar);
+        // map.fitBounds(mapData.getBounds());
+
+        return newLayer;
+    };
+
+    const dataToMap = (dataVar, styleInput) => {
+        return funIfLength(dataVar, loadData(styleInput));
+    };
+
+    const markerToCircle = (color) => {
+        const pointToCircle = (geoJsonPoint, latlng) => L.circleMarker(latlng);
+
+        return { pointToLayer: pointToCircle
+               , style       : styleCircle(color)
+               };
+    };
+
+    const styleCircle   = (color) => (geoJsonFeature) => {
+        return { fillColor  : color
+               , radius     : 6
+               , fillOpacity: 1
+               , stroke     : false
+               };
+    };
+
+    const styleLine = (color) => {
+        return { style : {color}
+               , weight: 5
+               };
+    };
+
     const linesOutput    = splitSearch(linesInput.drop, keyInput);
     const stationsOutput = search(stationsInput       , keyInput);
 
     let _ = layerInput !== null ? layerInput.clearLayers()
                                 : null;
 
-    const color = arrayToHsl(colorMap[keyInput]);
+    const lineColor = arrayToHsl(colorMap[keyInput]);
 
-    _                      = checkLength( linesOutput.take
-                                        , loadData( mapVar
-                                                  , lineStyle(color)
-                                                  )
-                                        );
-    const newStationsLayer = checkLength( stationsOutput
-                                        , loadData( mapVar
-                                                  , markerToCircle(color)
-                                                  )
-                                        );
+    _                 = dataToMap(linesOutput.take, styleLine(lineColor)     );
+    const newStations = dataToMap(stationsOutput  , markerToCircle(lineColor));
 
+    //
+    // check if the machine is working correctly...
+    //
+    const checkOutput = ([rows, column]) => {
+        console.log(unique(rows.map((row) => row.properties[column])));
+        console.log(rows.length);
+    };
     [ [linesOutput.take, "name"] as any
     , [stationsOutput  , "line"] as any
     ].forEach(checkOutput);
 
-    return [linesOutput, stationsOutput, newStationsLayer];
+    return [linesOutput, stationsOutput, newStations];
 };
 
+//
+// side effects! ...this makes things much easier
+//
 const selectStop = (selection) => {
     [lines, stations, stationsLayer] = mapInput( map
                                                , lines
@@ -190,6 +190,11 @@ const selectStop = (selection) => {
 //
 // main
 //
+const refresh  = ()           => location.reload();
+const checkKey = (keyStroke)  => {
+    return contains(Object.keys(keysToStops).join(", "))(keyStroke.toString());
+};
+
 // const map = L.map("map", mapOpt).setView(origin, 11);
 const map = L.map("map").setView(origin, 11);
 L.tileLayer(tileUrl).addTo(map);
@@ -206,4 +211,7 @@ window.onkeydown = (e) => {
                      : null;
 };
 
+//
+// demo
+//
 // ["G", "R", "F"].forEach(selectStop);

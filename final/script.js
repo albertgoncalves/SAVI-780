@@ -1,4 +1,7 @@
 // tslint script.ts; tsc script.ts;
+//
+// variables
+//
 var tileUrl = ("https://stamen-tiles.a.ssl.fastly.net/toner/"
     + "{z}/{x}/{y}.png");
 var origin = [40.741,
@@ -59,14 +62,10 @@ var initLines = function (linesObj) { return ({ take: [], drop: linesObj }); };
 var unique = function (myArray) {
     return (myArray.filter(function (v, i, a) { return a.indexOf(v) === i; }));
 };
-var checkLength = function (myArray, f) { return myArray.length > 0 ? f(myArray)
+var funIfLength = function (myArray, f) { return myArray.length > 0 ? f(myArray)
     : null; };
-var checkKey = function (keyStroke) {
-    return contains(Object.keys(keysToStops).join(", "))(keyStroke.toString());
-};
-var refresh = function () { return location.reload(); };
 var smudge = function (colorVal) {
-    var newVal = ((colorVal * 0.15) * (Math.random() - 0.5)) + colorVal;
+    var newVal = ((colorVal * 0.19) * (Math.random() - 0.5)) + colorVal;
     return newVal < 0 ? "0"
         : newVal.toString();
 };
@@ -95,51 +94,59 @@ var splitSearch = function (featureArray, searchTerm) {
     return { take: take, drop: drop };
 };
 //
-// geojson loader
+// geojson loader (and stylist)
 //
-var loadData = function (mapVar, style) { return function (dataVar) {
-    var mapData = L.geoJson(dataVar, style);
-    var newLayer = mapData.addTo(mapVar);
-    // map.fitBounds(mapData.getBounds());
-    return newLayer;
-}; };
-var checkOutput = function (_a) {
-    var rows = _a[0], column = _a[1];
-    console.log(unique(rows.map(function (row) { return row.properties[column]; })));
-    console.log(rows.length);
-};
-var pointToCircle = function (geoJsonPoint, latlng) { return L.circleMarker(latlng); };
-var markerToCircle = function (color) {
-    return { pointToLayer: pointToCircle,
-        style: styleCircle(color)
-    };
-};
-var styleCircle = function (color) { return function (geoJsonFeature) {
-    return { fillColor: color,
-        radius: 6,
-        fillOpacity: 1,
-        stroke: false
-    };
-}; };
-var lineStyle = function (inputColor) {
-    return { style: { color: inputColor
-        },
-        weight: 5
-    };
-};
 var mapInput = function (mapVar, linesInput, stationsInput, layerInput, keyInput) {
+    var loadData = function (style) { return function (dataVar) {
+        var mapData = L.geoJson(dataVar, style);
+        var newLayer = mapData.addTo(mapVar);
+        // map.fitBounds(mapData.getBounds());
+        return newLayer;
+    }; };
+    var dataToMap = function (dataVar, styleInput) {
+        return funIfLength(dataVar, loadData(styleInput));
+    };
+    var markerToCircle = function (color) {
+        var pointToCircle = function (geoJsonPoint, latlng) { return L.circleMarker(latlng); };
+        return { pointToLayer: pointToCircle,
+            style: styleCircle(color)
+        };
+    };
+    var styleCircle = function (color) { return function (geoJsonFeature) {
+        return { fillColor: color,
+            radius: 6,
+            fillOpacity: 1,
+            stroke: false
+        };
+    }; };
+    var styleLine = function (color) {
+        return { style: { color: color },
+            weight: 5
+        };
+    };
     var linesOutput = splitSearch(linesInput.drop, keyInput);
     var stationsOutput = search(stationsInput, keyInput);
     var _ = layerInput !== null ? layerInput.clearLayers()
         : null;
-    var color = arrayToHsl(colorMap[keyInput]);
-    _ = checkLength(linesOutput.take, loadData(mapVar, lineStyle(color)));
-    var newStationsLayer = checkLength(stationsOutput, loadData(mapVar, markerToCircle(color)));
+    var lineColor = arrayToHsl(colorMap[keyInput]);
+    _ = dataToMap(linesOutput.take, styleLine(lineColor));
+    var newStations = dataToMap(stationsOutput, markerToCircle(lineColor));
+    //
+    // check if the machine is working correctly...
+    //
+    var checkOutput = function (_a) {
+        var rows = _a[0], column = _a[1];
+        console.log(unique(rows.map(function (row) { return row.properties[column]; })));
+        console.log(rows.length);
+    };
     [[linesOutput.take, "name"],
         [stationsOutput, "line"]
     ].forEach(checkOutput);
-    return [linesOutput, stationsOutput, newStationsLayer];
+    return [linesOutput, stationsOutput, newStations];
 };
+//
+// side effects! ...this makes things much easier
+//
 var selectStop = function (selection) {
     var _a;
     _a = mapInput(map, lines, stations, stationsLayer, selection), lines = _a[0], stations = _a[1], stationsLayer = _a[2];
@@ -147,6 +154,10 @@ var selectStop = function (selection) {
 //
 // main
 //
+var refresh = function () { return location.reload(); };
+var checkKey = function (keyStroke) {
+    return contains(Object.keys(keysToStops).join(", "))(keyStroke.toString());
+};
 // const map = L.map("map", mapOpt).setView(origin, 11);
 var map = L.map("map").setView(origin, 11);
 L.tileLayer(tileUrl).addTo(map);
@@ -159,4 +170,7 @@ window.onkeydown = function (e) {
             : null
         : null;
 };
+//
+// demo
+//
 // ["G", "R", "F"].forEach(selectStop);
