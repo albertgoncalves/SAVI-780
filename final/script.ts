@@ -15,59 +15,54 @@ interface Splits  { take: Row[];
 //
 // variables
 //
-// const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
-//                           + "{z}/{x}/{y}.png"
-//                           );
-const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/watercolor"
-                          + "/{z}/{x}/{y}.jpg"
+const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
+                          + "{z}/{x}/{y}.png"
                           );
+// const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/watercolor"
+//                           + "/{z}/{x}/{y}.jpg"
+//                           );
+const tileOpts          = { opacity: 0.65
+                          };
 const origin : number[] = [  40.741
                           , -73.925
                           ];
-// const mapOpt            = { doubleClickZoom: false
-//                           , dragging       : false
-//                           , keyboard       : false
-//                           , scrollWheelZoom: false
-//                           , tap            : false
-//                           , touchZoom      : false
-//                           , zoomControl    : false
-//                           };
-
-const colorMap    = { 1: [  0, 80, 50]
-                    , 2: [  0, 80, 50]
-                    , 3: [  0, 80, 50]
-                    , 4: [120, 60, 40]
-                    , 5: [120, 60, 40]
-                    , 6: [120, 60, 40]
-                    , 7: [295, 55, 40]
-                    , A: [240, 55, 40]
-                    , C: [240, 55, 40]
-                    , E: [240, 55, 40]
-                    , B: [ 30, 80, 50]
-                    , D: [ 30, 80, 50]
-                    , F: [ 30, 80, 50]
-                    , M: [ 30, 80, 50]
-                    , G: [100, 80, 55]
-                    , J: [ 35, 50, 40]
-                    , Z: [ 35, 50, 40]
-                    , L: [  0,  0, 35]
-                    , N: [ 55, 90, 50]
-                    , Q: [ 55, 90, 50]
-                    , R: [ 55, 90, 50]
-                    , W: [ 55, 90, 50]
-                    , S: [  0,  0, 40]
-                    };
-const allStops    = Object.keys(colorMap).map((x) => x.toString());
-const keysToStops = allStops.reduce(
-    (obj, stop) => {
-        obj[keyInputs[stop.toLowerCase()]] = stop;
-        return obj;
-    }, {}
-);
+const mapOpts           = { doubleClickZoom: false
+                          , dragging       : false
+                          , keyboard       : false
+                          , scrollWheelZoom: false
+                          , tap            : false
+                          , touchZoom      : false
+                          , zoomControl    : false
+                          };
+const colorMap          = { 1: [  0, 80, 50]
+                          , 2: [  0, 80, 50]
+                          , 3: [  0, 80, 50]
+                          , 4: [120, 60, 40]
+                          , 5: [120, 60, 40]
+                          , 6: [120, 60, 40]
+                          , 7: [295, 55, 40]
+                          , A: [240, 55, 40]
+                          , C: [240, 55, 40]
+                          , E: [240, 55, 40]
+                          , B: [ 30, 80, 50]
+                          , D: [ 30, 80, 50]
+                          , F: [ 30, 80, 50]
+                          , M: [ 30, 80, 50]
+                          , G: [100, 80, 55]
+                          , J: [ 35, 50, 40]
+                          , Z: [ 35, 50, 40]
+                          , L: [  0,  0, 35]
+                          , N: [ 55, 90, 50]
+                          , Q: [ 55, 90, 50]
+                          , R: [ 55, 90, 50]
+                          , W: [ 55, 90, 50]
+                          , S: [  0,  0, 40]
+                          };
 
 //
 // shared utility functions
 //
+const arrayToStr  = (array)              => array.map((x) => x.toString());
 const contains    = (mainString: string) => (subString: string): boolean => {
     return mainString.indexOf(subString) < 0 ? false
                                              : true;
@@ -85,13 +80,20 @@ const unique      = (myArray)    => {
 const funIfLength = (myArray, f) => myArray.length > 0 ? f(myArray)
                                                        : null;
 const smudge      = (colorVal)   => {
-    const  newVal = ((colorVal * 0.19) * (Math.random() - 0.5)) + colorVal;
+    const  newVal = ((colorVal * 0.195) * (Math.random() - 0.5)) + colorVal;
     return newVal < 0 ? "0"
                       : newVal.toString();
 };
-const arrayToHsl  = ([h, s, l])  => {
-    const [hh, ss, ll] = [h, s, l].map(smudge);
-    return `hsl(${hh}, ${ss}%, ${ll}%)`;
+const arrayToHsl  = ([h, s, l])  => `hsl(${h}, ${s}%, ${l}%)`;
+const randBetween = (min, max)   => {
+    return Math.floor(Math.random() * (max - min)) + min;
+};
+const randomHsl   = ()           => {
+    const h = randBetween( 0, 359);
+    const s = randBetween(50, 100);
+    const l = randBetween(40,  80);
+
+    return arrayToHsl(arrayToStr([h, s, l]));
 };
 
 //
@@ -131,22 +133,19 @@ const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
         return funIfLength(dataVar, loadData(styleInput));
     };
 
-    const markerToCircle = (color) => {
+    const markerToCircle = () => {
         const pointToCircle = (geoJsonPoint, latlng) => L.circleMarker(latlng);
 
         return { pointToLayer: pointToCircle
-               , style       : styleCircle(color)
+               , style       : styleCircle()
                };
     };
 
-    const styleCircle   = (color) => (geoJsonFeature) => {
-        return { radius     : 15
-               , fillOpacity: 0
-               , color      : "black"
-               , weight     : 3
-               , stroke     : true
-               , opacity    : 0.5
-               // , fillColor  : color
+    const styleCircle = () => (geoJsonFeature) => {
+        return { radius     : 9
+               , fillColor  : randomHsl()
+               , fillOpacity: 0.6
+               , stroke     : false
                };
     };
 
@@ -162,10 +161,10 @@ const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
     let _ = layerInput !== null ? layerInput.clearLayers()
                                 : null;
 
-    const lineColor = arrayToHsl(colorMap[keyInput]);
+    const lineColor = arrayToHsl(colorMap[keyInput].map(smudge));
 
-    _                 = dataToMap(linesOutput.take, styleLine(lineColor)     );
-    const newStations = dataToMap(stationsOutput  , markerToCircle(lineColor));
+    _                 = dataToMap(linesOutput.take, styleLine(lineColor));
+    const newStations = dataToMap(stationsOutput  , markerToCircle()    );
 
     //
     // check if the machine is working correctly...
@@ -201,9 +200,17 @@ const checkKey = (keyStroke)  => {
     return contains(Object.keys(keysToStops).join(", "))(keyStroke.toString());
 };
 
-// const map = L.map("map", mapOpt).setView(origin, 11);
+const allStops    = arrayToStr(Object.keys(colorMap));
+const keysToStops = allStops.reduce(
+    (obj, stop) => {
+        obj[keyInputs[stop.toLowerCase()]] = stop;
+        return obj;
+    }, {}
+);
+
+// const map = L.map("map", mapOpts).setView(origin, 11);
 const map = L.map("map").setView(origin, 11);
-L.tileLayer(tileUrl, {opacity: 0.65}).addTo(map);
+L.tileLayer(tileUrl, tileOpts).addTo(map);
 
 lines    = initLines(lines.features);
 stations = stations.features;

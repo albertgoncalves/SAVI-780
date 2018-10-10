@@ -2,22 +2,24 @@
 //
 // variables
 //
-// const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
-//                           + "{z}/{x}/{y}.png"
+var tileUrl = ("https://stamen-tiles.a.ssl.fastly.net/toner/"
+    + "{z}/{x}/{y}.png");
+// const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/watercolor"
+//                           + "/{z}/{x}/{y}.jpg"
 //                           );
-var tileUrl = ("https://stamen-tiles.a.ssl.fastly.net/watercolor"
-    + "/{z}/{x}/{y}.jpg");
+var tileOpts = { opacity: 0.65
+};
 var origin = [40.741,
     -73.925
 ];
-// const mapOpt            = { doubleClickZoom: false
-//                           , dragging       : false
-//                           , keyboard       : false
-//                           , scrollWheelZoom: false
-//                           , tap            : false
-//                           , touchZoom      : false
-//                           , zoomControl    : false
-//                           };
+var mapOpts = { doubleClickZoom: false,
+    dragging: false,
+    keyboard: false,
+    scrollWheelZoom: false,
+    tap: false,
+    touchZoom: false,
+    zoomControl: false
+};
 var colorMap = { 1: [0, 80, 50],
     2: [0, 80, 50],
     3: [0, 80, 50],
@@ -42,14 +44,10 @@ var colorMap = { 1: [0, 80, 50],
     W: [55, 90, 50],
     S: [0, 0, 40]
 };
-var allStops = Object.keys(colorMap).map(function (x) { return x.toString(); });
-var keysToStops = allStops.reduce(function (obj, stop) {
-    obj[keyInputs[stop.toLowerCase()]] = stop;
-    return obj;
-}, {});
 //
 // shared utility functions
 //
+var arrayToStr = function (array) { return array.map(function (x) { return x.toString(); }); };
 var contains = function (mainString) { return function (subString) {
     return mainString.indexOf(subString) < 0 ? false
         : true;
@@ -68,14 +66,22 @@ var unique = function (myArray) {
 var funIfLength = function (myArray, f) { return myArray.length > 0 ? f(myArray)
     : null; };
 var smudge = function (colorVal) {
-    var newVal = ((colorVal * 0.19) * (Math.random() - 0.5)) + colorVal;
+    var newVal = ((colorVal * 0.195) * (Math.random() - 0.5)) + colorVal;
     return newVal < 0 ? "0"
         : newVal.toString();
 };
 var arrayToHsl = function (_a) {
     var h = _a[0], s = _a[1], l = _a[2];
-    var _b = [h, s, l].map(smudge), hh = _b[0], ss = _b[1], ll = _b[2];
-    return "hsl(" + hh + ", " + ss + "%, " + ll + "%)";
+    return "hsl(" + h + ", " + s + "%, " + l + "%)";
+};
+var randBetween = function (min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+};
+var randomHsl = function () {
+    var h = randBetween(0, 359);
+    var s = randBetween(50, 100);
+    var l = randBetween(40, 80);
+    return arrayToHsl(arrayToStr([h, s, l]));
 };
 //
 // station search pattern
@@ -109,20 +115,17 @@ var mapInput = function (mapVar, linesInput, stationsInput, layerInput, keyInput
     var dataToMap = function (dataVar, styleInput) {
         return funIfLength(dataVar, loadData(styleInput));
     };
-    var markerToCircle = function (color) {
+    var markerToCircle = function () {
         var pointToCircle = function (geoJsonPoint, latlng) { return L.circleMarker(latlng); };
         return { pointToLayer: pointToCircle,
-            style: styleCircle(color)
+            style: styleCircle()
         };
     };
-    var styleCircle = function (color) { return function (geoJsonFeature) {
-        return { radius: 15,
-            fillOpacity: 0,
-            color: "black",
-            weight: 3,
-            stroke: true,
-            opacity: 0.5
-            // , fillColor  : color
+    var styleCircle = function () { return function (geoJsonFeature) {
+        return { radius: 9,
+            fillColor: randomHsl(),
+            fillOpacity: 0.6,
+            stroke: false
         };
     }; };
     var styleLine = function (color) {
@@ -134,9 +137,9 @@ var mapInput = function (mapVar, linesInput, stationsInput, layerInput, keyInput
     var stationsOutput = search(stationsInput, keyInput);
     var _ = layerInput !== null ? layerInput.clearLayers()
         : null;
-    var lineColor = arrayToHsl(colorMap[keyInput]);
+    var lineColor = arrayToHsl(colorMap[keyInput].map(smudge));
     _ = dataToMap(linesOutput.take, styleLine(lineColor));
-    var newStations = dataToMap(stationsOutput, markerToCircle(lineColor));
+    var newStations = dataToMap(stationsOutput, markerToCircle());
     //
     // check if the machine is working correctly...
     //
@@ -163,9 +166,14 @@ var refresh = function () { return location.reload(); };
 var checkKey = function (keyStroke) {
     return contains(Object.keys(keysToStops).join(", "))(keyStroke.toString());
 };
-// const map = L.map("map", mapOpt).setView(origin, 11);
+var allStops = arrayToStr(Object.keys(colorMap));
+var keysToStops = allStops.reduce(function (obj, stop) {
+    obj[keyInputs[stop.toLowerCase()]] = stop;
+    return obj;
+}, {});
+// const map = L.map("map", mapOpts).setView(origin, 11);
 var map = L.map("map").setView(origin, 11);
-L.tileLayer(tileUrl, { opacity: 0.65 }).addTo(map);
+L.tileLayer(tileUrl, tileOpts).addTo(map);
 lines = initLines(lines.features);
 stations = stations.features;
 var stationsLayer = null;
