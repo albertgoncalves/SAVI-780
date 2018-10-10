@@ -2,23 +2,25 @@
 //
 // variables
 //
-var tileUrl = ("https://stamen-tiles.a.ssl.fastly.net/toner/"
-    + "{z}/{x}/{y}.png");
+// const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
+//                           + "{z}/{x}/{y}.png"
+//                           );
 // const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/watercolor"
 //                           + "/{z}/{x}/{y}.jpg"
 //                           );
-var tileOpts = { opacity: 0.65
+var tileUrl = ("https://b.basemaps.cartocdn.com/dark_all"
+    + "/{z}/{x}/{y}.jpg");
+var tileOpts = { opacity: 0.775
 };
-var origin = [40.741,
+var origin = [40.740,
     -73.925
 ];
-var mapOpts = { doubleClickZoom: false,
-    dragging: false,
-    keyboard: false,
-    scrollWheelZoom: false,
-    tap: false,
-    touchZoom: false,
-    zoomControl: false
+var mapOpts = { keyboard: false
+};
+var southWest = [40.525, -74.20];
+var northEast = [40.975, -73.65];
+var bounds = L.latLngBounds(southWest, northEast);
+var boundOpts = { animate: false
 };
 var colorMap = { 1: [0, 80, 50],
     2: [0, 80, 50],
@@ -122,9 +124,9 @@ var mapInput = function (mapVar, linesInput, stationsInput, layerInput, keyInput
         };
     };
     var styleCircle = function () { return function (geoJsonFeature) {
-        return { radius: 9,
+        return { radius: 10,
             fillColor: randomHsl(),
-            fillOpacity: 0.6,
+            fillOpacity: 0.575,
             stroke: false
         };
     }; };
@@ -171,16 +173,20 @@ var keysToStops = allStops.reduce(function (obj, stop) {
     obj[keyInputs[stop.toLowerCase()]] = stop;
     return obj;
 }, {});
-// const map = L.map("map", mapOpts).setView(origin, 11);
-var map = L.map("map").setView(origin, 11);
+var map = L.map("map", mapOpts).setView(origin, 11);
 L.tileLayer(tileUrl, tileOpts).addTo(map);
+map.setMaxBounds(bounds);
+map.on("drag", function () { return map.panInsideBounds(bounds, boundOpts); });
 lines = initLines(lines.features);
 stations = stations.features;
 var stationsLayer = null;
 window.onkeydown = function (e) {
-    return e.keyCode ? checkKey(e.keyCode) ? selectStop(keysToStops[e.keyCode])
-        : e.keyCode === 27 ? refresh()
-            : null
+    return e.keyCode
+        ? checkKey(e.keyCode)
+            ? selectStop(keysToStops[e.keyCode])
+            : e.keyCode === 27 ? refresh()
+                : e.keyCode === 89 ? map.setView(origin, 11)
+                    : null
         : null;
 };
 //

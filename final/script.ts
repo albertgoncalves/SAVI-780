@@ -15,24 +15,26 @@ interface Splits  { take: Row[];
 //
 // variables
 //
-const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
-                          + "{z}/{x}/{y}.png"
-                          );
+// const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
+//                           + "{z}/{x}/{y}.png"
+//                           );
 // const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/watercolor"
 //                           + "/{z}/{x}/{y}.jpg"
 //                           );
-const tileOpts          = { opacity: 0.65
+const tileUrl: string   = ( "https://b.basemaps.cartocdn.com/dark_all"
+                          + "/{z}/{x}/{y}.jpg"
+                          );
+const tileOpts          = { opacity: 0.775
                           };
-const origin : number[] = [  40.741
+const origin : number[] = [  40.740
                           , -73.925
                           ];
-const mapOpts           = { doubleClickZoom: false
-                          , dragging       : false
-                          , keyboard       : false
-                          , scrollWheelZoom: false
-                          , tap            : false
-                          , touchZoom      : false
-                          , zoomControl    : false
+const mapOpts           = { keyboard: false
+                          };
+const southWest         = [40.525, -74.20];
+const northEast         = [40.975, -73.65];
+const bounds            = L.latLngBounds(southWest, northEast);
+const boundOpts         = { animate: false
                           };
 const colorMap          = { 1: [  0, 80, 50]
                           , 2: [  0, 80, 50]
@@ -142,9 +144,9 @@ const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
     };
 
     const styleCircle = () => (geoJsonFeature) => {
-        return { radius     : 9
+        return { radius     : 10
                , fillColor  : randomHsl()
-               , fillOpacity: 0.6
+               , fillOpacity: 0.575
                , stroke     : false
                };
     };
@@ -208,9 +210,11 @@ const keysToStops = allStops.reduce(
     }, {}
 );
 
-// const map = L.map("map", mapOpts).setView(origin, 11);
-const map = L.map("map").setView(origin, 11);
+const map = L.map("map", mapOpts).setView(origin, 11);
 L.tileLayer(tileUrl, tileOpts).addTo(map);
+
+map.setMaxBounds(bounds);
+map.on("drag", () => map.panInsideBounds(bounds, boundOpts));
 
 lines    = initLines(lines.features);
 stations = stations.features;
@@ -218,10 +222,13 @@ stations = stations.features;
 let stationsLayer = null;
 
 window.onkeydown = (e) => {
-    return e.keyCode ? checkKey(e.keyCode) ? selectStop(keysToStops[e.keyCode])
-                                           : e.keyCode === 27 ? refresh()
-                                                              : null
-                     : null;
+    return e.keyCode
+        ? checkKey(e.keyCode)
+            ? selectStop(keysToStops[e.keyCode])
+            : e.keyCode === 27 ? refresh()
+                               : e.keyCode === 89 ? map.setView(origin, 11)
+                                                  : null
+        : null;
 };
 
 //
