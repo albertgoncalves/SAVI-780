@@ -58,7 +58,7 @@ const colorMap          = { 1: [  0, 80, 50]
 //
 // shared utility functions
 //
-const arrayToStr  = (array)              => array.map((x) => x.toString());
+const arrayToStr  = (array) => array.map((x) => x.toString());
 const contains    = (mainString: string) => (subString: string): boolean => {
     return mainString.indexOf(subString) < 0 ? false
                                              : true;
@@ -69,22 +69,21 @@ const checkField  = (searchTerm: string, field: string) =>
     const column: string = row.properties[field];
     return contains(column)(dashes(searchTerm));
 };
-const initLines   = (linesObj)  => ({take: [], drop: linesObj});
-const unique      = (array)     => {
+const unique      = (array) => {
     return (array.filter((v, i, a) => a.indexOf(v) === i));
 };
-const funIfLength = (array, f)  => array.length > 0 ? f(array)
+const funIfLength = (array, f) => array.length > 0 ? f(array)
                                                        : null;
-const smudge      = (colorVal)  => {
-    const  newVal = ((colorVal * 0.195) * (Math.random() - 0.5)) + colorVal;
+const smudge      = (colorVal) => {
+    const  newVal = ((colorVal * 0.15) * (Math.random() - 0.5)) + colorVal;
     return newVal < 0 ? "0"
-                      : newVal.toString();
+                      : newVal.toFixed(4).toString();
 };
 const arrayToHsl  = ([h, s, l]) => `hsl(${h}, ${s}%, ${l}%)`;
-const randBetween = (min, max)  => {
+const randBetween = (min, max) => {
     return Math.floor(Math.random() * (max - min)) + min;
 };
-const randomHsl   = ()          => {
+const randomHsl   = () => {
     const h = randBetween( 0, 359);
     const s = randBetween(50, 100);
     const l = randBetween(40,  80);
@@ -146,8 +145,8 @@ const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
     };
 
     const styleLine = (color) => {
-        return { style : {color}
-               , weight: 5
+        return { style  : {color}
+               , weight : 6
                };
     };
 
@@ -191,11 +190,11 @@ const selectStop = (selection) => {
 //
 // main
 //
-const refresh  = ()           => location.reload();
-const checkKey = (keyStroke)  => {
+const refresh     = ()          => location.reload();
+const checkKey    = (keyStroke) => {
     return contains(Object.keys(keysToStops).join(", "))(keyStroke.toString());
 };
-
+const initLines   = (linesObj)  => ({take: [], drop: linesObj});
 const allStops    = arrayToStr(Object.keys(colorMap));
 const keysToStops = allStops.reduce(
     (obj, stop) => {

@@ -55,16 +55,15 @@ var checkField = function (searchTerm, field) {
         return contains(column)(dashes(searchTerm));
     };
 };
-var initLines = function (linesObj) { return ({ take: [], drop: linesObj }); };
 var unique = function (array) {
     return (array.filter(function (v, i, a) { return a.indexOf(v) === i; }));
 };
 var funIfLength = function (array, f) { return array.length > 0 ? f(array)
     : null; };
 var smudge = function (colorVal) {
-    var newVal = ((colorVal * 0.195) * (Math.random() - 0.5)) + colorVal;
+    var newVal = ((colorVal * 0.15) * (Math.random() - 0.5)) + colorVal;
     return newVal < 0 ? "0"
-        : newVal.toString();
+        : newVal.toFixed(4).toString();
 };
 var arrayToHsl = function (_a) {
     var h = _a[0], s = _a[1], l = _a[2];
@@ -126,7 +125,7 @@ var mapInput = function (mapVar, linesInput, stationsInput, layerInput, keyInput
     }; };
     var styleLine = function (color) {
         return { style: { color: color },
-            weight: 5
+            weight: 6
         };
     };
     var linesOutput = splitSearch(linesInput.drop, keyInput);
@@ -162,6 +161,7 @@ var refresh = function () { return location.reload(); };
 var checkKey = function (keyStroke) {
     return contains(Object.keys(keysToStops).join(", "))(keyStroke.toString());
 };
+var initLines = function (linesObj) { return ({ take: [], drop: linesObj }); };
 var allStops = arrayToStr(Object.keys(colorMap));
 var keysToStops = allStops.reduce(function (obj, stop) {
     obj[keyInputs[stop.toLowerCase()]] = stop;
