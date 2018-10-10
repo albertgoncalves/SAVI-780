@@ -1,0 +1,22 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+    width: 100%;
+}
+
+svg {
+    height: 100%;
+    width: 100%;
+}
+
+.state {
+    fill: white;
+    stroke: black;
+    stroke-width: 1;
+}
+
+.state.mouseover {
+    fill: black;
+}
