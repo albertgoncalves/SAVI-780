@@ -115,8 +115,10 @@ var mapInput = function (mapVar, linesInput, stationsInput, layerInput, keyInput
     var styleCircle = function (color) { return function (geoJsonFeature) {
         return { fillColor: color,
             radius: 6,
-            fillOpacity: 1,
-            stroke: false
+            fillOpacity: 0.5,
+            color: "black",
+            weight: 2,
+            stroke: true
         };
     }; };
     var styleLine = function (color) {

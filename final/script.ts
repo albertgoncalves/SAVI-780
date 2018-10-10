@@ -139,8 +139,10 @@ const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
     const styleCircle   = (color) => (geoJsonFeature) => {
         return { fillColor  : color
                , radius     : 6
-               , fillOpacity: 1
-               , stroke     : false
+               , fillOpacity: 0.5
+               , color      : "black"
+               , weight     : 2
+               , stroke     : true
                };
     };
 
