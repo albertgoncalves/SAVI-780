@@ -15,12 +15,6 @@ interface Splits  { take: Row[];
 //
 // variables
 //
-// const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
-//                           + "{z}/{x}/{y}.png"
-//                           );
-// const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/watercolor"
-//                           + "/{z}/{x}/{y}.jpg"
-//                           );
 const tileUrl: string   = ( "https://b.basemaps.cartocdn.com/dark_all"
                           + "/{z}/{x}/{y}.jpg"
                           );

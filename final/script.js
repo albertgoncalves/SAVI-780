@@ -2,12 +2,6 @@
 //
 // variables
 //
-// const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
-//                           + "{z}/{x}/{y}.png"
-//                           );
-// const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/watercolor"
-//                           + "/{z}/{x}/{y}.jpg"
-//                           );
 var tileUrl = ("https://b.basemaps.cartocdn.com/dark_all"
     + "/{z}/{x}/{y}.jpg");
 var tileOpts = { opacity: 0.775
