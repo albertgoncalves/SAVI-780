@@ -56,10 +56,10 @@ var checkField = function (searchTerm, field) {
     };
 };
 var initLines = function (linesObj) { return ({ take: [], drop: linesObj }); };
-var unique = function (myArray) {
-    return (myArray.filter(function (v, i, a) { return a.indexOf(v) === i; }));
+var unique = function (array) {
+    return (array.filter(function (v, i, a) { return a.indexOf(v) === i; }));
 };
-var funIfLength = function (myArray, f) { return myArray.length > 0 ? f(myArray)
+var funIfLength = function (array, f) { return array.length > 0 ? f(array)
     : null; };
 var smudge = function (colorVal) {
     var newVal = ((colorVal * 0.195) * (Math.random() - 0.5)) + colorVal;

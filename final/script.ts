@@ -69,22 +69,22 @@ const checkField  = (searchTerm: string, field: string) =>
     const column: string = row.properties[field];
     return contains(column)(dashes(searchTerm));
 };
-const initLines   = (linesObj)   => ({take: [], drop: linesObj});
-const unique      = (myArray)    => {
-    return (myArray.filter((v, i, a) => a.indexOf(v) === i));
+const initLines   = (linesObj)  => ({take: [], drop: linesObj});
+const unique      = (array)     => {
+    return (array.filter((v, i, a) => a.indexOf(v) === i));
 };
-const funIfLength = (myArray, f) => myArray.length > 0 ? f(myArray)
+const funIfLength = (array, f)  => array.length > 0 ? f(array)
                                                        : null;
-const smudge      = (colorVal)   => {
+const smudge      = (colorVal)  => {
     const  newVal = ((colorVal * 0.195) * (Math.random() - 0.5)) + colorVal;
     return newVal < 0 ? "0"
                       : newVal.toString();
 };
-const arrayToHsl  = ([h, s, l])  => `hsl(${h}, ${s}%, ${l}%)`;
-const randBetween = (min, max)   => {
+const arrayToHsl  = ([h, s, l]) => `hsl(${h}, ${s}%, ${l}%)`;
+const randBetween = (min, max)  => {
     return Math.floor(Math.random() * (max - min)) + min;
 };
-const randomHsl   = ()           => {
+const randomHsl   = ()          => {
     const h = randBetween( 0, 359);
     const s = randBetween(50, 100);
     const l = randBetween(40,  80);
