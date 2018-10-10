@@ -15,8 +15,11 @@ interface Splits  { take: Row[];
 //
 // variables
 //
-const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
-                          + "{z}/{x}/{y}.png"
+// const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/toner/"
+//                           + "{z}/{x}/{y}.png"
+//                           );
+const tileUrl: string   = ( "https://stamen-tiles.a.ssl.fastly.net/watercolor"
+                          + "/{z}/{x}/{y}.jpg"
                           );
 const origin : number[] = [  40.741
                           , -73.925
@@ -137,12 +140,13 @@ const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
     };
 
     const styleCircle   = (color) => (geoJsonFeature) => {
-        return { fillColor  : color
-               , radius     : 6
-               , fillOpacity: 0.5
+        return { radius     : 15
+               , fillOpacity: 0
                , color      : "black"
-               , weight     : 2
+               , weight     : 3
                , stroke     : true
+               , opacity    : 0.5
+               // , fillColor  : color
                };
     };
 
@@ -166,13 +170,13 @@ const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
     //
     // check if the machine is working correctly...
     //
-    const checkOutput = ([rows, column]) => {
-        console.log(unique(rows.map((row) => row.properties[column])));
-        console.log(rows.length);
-    };
-    [ [linesOutput.take, "name"] as any
-    , [stationsOutput  , "line"] as any
-    ].forEach(checkOutput);
+    // const checkOutput = ([rows, column]) => {
+    //     console.log(unique(rows.map((row) => row.properties[column])));
+    //     console.log(rows.length);
+    // };
+    // [ [linesOutput.take, "name"] as any
+    // , [stationsOutput  , "line"] as any
+    // ].forEach(checkOutput);
 
     return [linesOutput, stationsOutput, newStations];
 };
@@ -199,7 +203,7 @@ const checkKey = (keyStroke)  => {
 
 // const map = L.map("map", mapOpt).setView(origin, 11);
 const map = L.map("map").setView(origin, 11);
-L.tileLayer(tileUrl).addTo(map);
+L.tileLayer(tileUrl, {opacity: 0.65}).addTo(map);
 
 lines    = initLines(lines.features);
 stations = stations.features;
