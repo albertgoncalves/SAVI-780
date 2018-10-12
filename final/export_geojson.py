@@ -13,8 +13,8 @@ def export_geojson(gdf, filename):
 if __name__ == '__main__':
     lines, stations = prepare_data()
 
-    export_args = [ (lines   [['name', 'geometry']], 'lines'   )
-                  , (stations[['line', 'geometry']], 'stations')
+    export_args = [ (lines   , 'lines'   )
+                  , (stations, 'stations')
                   ]
 
     for gdf, filename in export_args:

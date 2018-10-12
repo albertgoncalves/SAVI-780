@@ -101,14 +101,16 @@ var splitSearch = function (featureArray, searchTerm) {
 // geojson loader (and stylist)
 //
 var mapInput = function (mapVar, linesInput, stationsInput, layerInput, keyInput) {
-    var loadData = function (style) { return function (dataVar) {
+    var rowToPopup = function (layer) { return layer.feature.properties.name; };
+    var loadData = function (style, toolBool) { return function (dataVar) {
         var mapData = L.geoJson(dataVar, style);
         var newLayer = mapData.addTo(mapVar);
-        // map.fitBounds(mapData.getBounds());
+        _ = toolBool ? mapData.bindTooltip(rowToPopup)
+            : null;
         return newLayer;
     }; };
-    var dataToMap = function (dataVar, styleInput) {
-        return funIfLength(dataVar, loadData(styleInput));
+    var dataToMap = function (dataVar, styleInput, toolBool) {
+        return funIfLength(dataVar, loadData(styleInput, toolBool));
     };
     var markerToCircle = function () {
         var pointToCircle = function (geoJsonPoint, latlng) { return L.circleMarker(latlng); };
@@ -119,7 +121,7 @@ var mapInput = function (mapVar, linesInput, stationsInput, layerInput, keyInput
     var styleCircle = function () { return function (geoJsonFeature) {
         return { radius: 10,
             fillColor: randomHsl(),
-            fillOpacity: 0.575,
+            fillOpacity: 0.5,
             stroke: false
         };
     }; };
@@ -133,8 +135,8 @@ var mapInput = function (mapVar, linesInput, stationsInput, layerInput, keyInput
     var _ = layerInput !== null ? layerInput.clearLayers()
         : null;
     var lineColor = arrayToHsl(colorMap[keyInput].map(smudge));
-    _ = dataToMap(linesOutput.take, styleLine(lineColor));
-    var newStations = dataToMap(stationsOutput, markerToCircle());
+    _ = dataToMap(linesOutput.take, styleLine(lineColor), false);
+    var newStations = dataToMap(stationsOutput, markerToCircle(), true);
     //
     // check if the machine is working correctly...
     //

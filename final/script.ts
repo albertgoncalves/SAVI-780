@@ -115,17 +115,20 @@ const splitSearch = (featureArray: Row[], searchTerm: string): Splits => {
 // geojson loader (and stylist)
 //
 const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
+    const rowToPopup = (layer) => layer.feature.properties.name;
 
-    const loadData = (style) => (dataVar) => {
+    const loadData = (style, toolBool) => (dataVar) => {
         const mapData  = L.geoJson(dataVar, style);
         const newLayer = mapData.addTo(mapVar);
-        // map.fitBounds(mapData.getBounds());
+
+        _ = toolBool ? mapData.bindTooltip(rowToPopup)
+                     : null;
 
         return newLayer;
     };
 
-    const dataToMap = (dataVar, styleInput) => {
-        return funIfLength(dataVar, loadData(styleInput));
+    const dataToMap = (dataVar, styleInput, toolBool) => {
+        return funIfLength(dataVar, loadData(styleInput, toolBool));
     };
 
     const markerToCircle = () => {
@@ -139,7 +142,7 @@ const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
     const styleCircle = () => (geoJsonFeature) => {
         return { radius     : 10
                , fillColor  : randomHsl()
-               , fillOpacity: 0.575
+               , fillOpacity: 0.5
                , stroke     : false
                };
     };
@@ -158,8 +161,8 @@ const mapInput = (mapVar, linesInput, stationsInput, layerInput, keyInput) => {
 
     const lineColor = arrayToHsl(colorMap[keyInput].map(smudge));
 
-    _                 = dataToMap(linesOutput.take, styleLine(lineColor));
-    const newStations = dataToMap(stationsOutput  , markerToCircle()    );
+    _                 = dataToMap(linesOutput.take, styleLine(lineColor), false);
+    const newStations = dataToMap(stationsOutput  , markerToCircle()    , true);
 
     //
     // check if the machine is working correctly...
