@@ -14,12 +14,12 @@ var changeColor = (color) => (id) => () => {
     document.getElementById(id).style.color = color;
 };
 var arrayToString = (array) => array.map((item) => item.toString());
-var createCircleAttributes = (id, r, x, y) => {
-    var [rr, xx, yy] = arrayToString([r, x, y]);
+var createCircleAttributes = (id, x, y, r) => {
+    var [xx, yy, rr] = arrayToString([x, y, r]);
     return([ ["id", id]
-           , [ "r", rr]
            , ["cx", xx]
            , ["cy", yy]
+           , [ "r", rr]
            ]
           );
 };
@@ -32,7 +32,7 @@ var createTextAttributes = (id, x, y) => {
           );
 };
 
-circleAttributes = createCircleAttributes("newCircle", 40, 400, 30);
+circleAttributes = createCircleAttributes("newCircle", 400, 30, 40);
 textAttributes   = createTextAttributes("newText", 400, 30);
 
 createSvg("circles")("circle")(circleAttributes);
