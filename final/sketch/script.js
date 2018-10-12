@@ -1,6 +1,26 @@
 /* jshint esversion: 6 */
 /* jshint -W014 */
 
+var arrayToString = (array) => array.map((item) => item.toString());
+var circleAttributes = (id, x, y, r) => {
+    var [xx, yy, rr] = arrayToString([x, y, r]);
+    return([ ["id", id]
+           , ["cx", xx]
+           , ["cy", yy]
+           , [ "r", rr]
+           ]
+          );
+};
+var textAttributes = (id, x, y) => {
+    var [xx, yy] = arrayToString([x, y]);
+    return([ ["id", id]
+           , [ "x", xx]
+           , [ "y", yy]
+           , ["text-anchor", "middle"]
+           , ["alignment-baseline", "middle"]
+           ]
+          );
+};
 var createSvg = (containerId) => (svgShape) => (attributes, text="") => {
     var newSvg = document.createElementNS( "http://www.w3.org/2000/svg"
                                          , svgShape
@@ -10,33 +30,21 @@ var createSvg = (containerId) => (svgShape) => (attributes, text="") => {
 
     document.getElementById(containerId).appendChild(newSvg);
 };
+var createCircle = (containerId) => (r) => (x, y) => (id) => {
+    createSvg(containerId)("circle")(circleAttributes(id, x, y, r));
+};
+var createText = (containerId) => (x, y) => (text) => (id) => {
+    createSvg(containerId)("text")(textAttributes(id, x, y), text);
+}
 var changeColor = (color) => (id) => () => {
     document.getElementById(id).style.color = color;
 };
-var arrayToString = (array) => array.map((item) => item.toString());
-var createCircleAttributes = (id, x, y, r) => {
-    var [xx, yy, rr] = arrayToString([x, y, r]);
-    return([ ["id", id]
-           , ["cx", xx]
-           , ["cy", yy]
-           , [ "r", rr]
-           ]
-          );
-};
-var createTextAttributes = (id, x, y) => {
-    var [xx, yy] = arrayToString([x, y]);
-    return([ ["id", id]
-           , [ "x", xx]
-           , [ "y", yy]
-           ]
-          );
-};
 
-circleAttributes = createCircleAttributes("newCircle", 400, 30, 40);
-textAttributes   = createTextAttributes("newText", 400, 30);
-
-createSvg("circles")("circle")(circleAttributes);
-createSvg("circles")("text"  )(textAttributes, "Hello again!");
+//
+// main
+//
+createCircle("circles")(40)(400, 30)("newCircle");
+createText("circles")(400, 30)("Hello again!")("newText");
 
 ["circle", "newCircle"].forEach(
     (elemId) => {
