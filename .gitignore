@@ -11,3 +11,4 @@ hw*
 *.txt
 tmp
 __pycache__
+help
